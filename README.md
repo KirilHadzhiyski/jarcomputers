@@ -62,6 +62,12 @@ The project is prepared for a custom domain and production email. Use `.env` / `
 
 Detailed setup steps are in `docs/publish-checklist.md`.
 
+## GitHub workflows
+
+- `CI` runs on every push and pull request.
+- It installs PHP and Node dependencies, runs database migrations against SQLite, executes `php artisan test`, and builds the Vite frontend.
+- Production publishing is intentionally manual and documented in the deployment docs.
+
 ## Useful notes
 
 - The app uses SQLite at `database/database.sqlite`.
