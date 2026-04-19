@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+
+    --primary: 217 91% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 220 14% 95%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 217 91% 95%;
+    --accent-foreground: 217 91% 35%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 89%;
+    --input: 220 13% 89%;
+    --ring: 217 91% 50%;
+
+    --radius: 0.75rem;
+
+    --hero-bg: 220 30% 8%;
+    --hero-foreground: 0 0% 100%;
+    --hero-muted: 220 20% 70%;
+
+    --trust: 142 71% 45%;
+    --trust-foreground: 0 0% 100%;
+
+    --cta-gradient: linear-gradient(135deg, hsl(217 91% 50%), hsl(217 91% 40%));
+    --cta-gradient-hover: linear-gradient(135deg, hsl(217 91% 45%), hsl(217 91% 35%));
+
+    --section-dark: 220 30% 8%;
+    --section-dark-foreground: 0 0% 98%;
+
+    --highlight: 45 93% 55%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .section-dark {
+    background-color: hsl(var(--section-dark));
+    color: hsl(var(--section-dark-foreground));
+  }
+  .hero-section {
+    background: linear-gradient(135deg, hsl(220 30% 6%), hsl(220 30% 12%), hsl(217 40% 15%));
+    color: hsl(var(--hero-foreground));
+  }
+  .trust-badge {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium;
+    background-color: hsl(var(--trust) / 0.1);
+    color: hsl(var(--trust));
+  }
+  .floating-cta {
+    @apply fixed bottom-4 right-4 z-50 rounded-full shadow-2xl;
+    background: var(--cta-gradient);
+    color: hsl(var(--primary-foreground));
+  }
+  .card-service {
+    @apply rounded-xl border bg-card p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    border-color: hsl(var(--border));
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(217 91% 60%), hsl(217 91% 40%));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
