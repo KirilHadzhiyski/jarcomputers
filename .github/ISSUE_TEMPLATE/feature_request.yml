@@ -1,0 +1,32 @@
+name: Feature request
+description: Request a product, workflow, or operations improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: business_need
+    attributes:
+      label: Business need
+      placeholder: What problem are we solving and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: user_flow
+    attributes:
+      label: User flow
+      placeholder: Describe the desired flow from start to finish.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected outcome
+      placeholder: What should be true after this is delivered?
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      placeholder: Deadlines, integrations, legal, hosting, content, or design constraints.
