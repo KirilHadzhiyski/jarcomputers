@@ -68,6 +68,13 @@ Detailed setup steps are in `docs/publish-checklist.md`.
 - It installs PHP and Node dependencies, runs database migrations against SQLite, executes `php artisan test`, and builds the Vite frontend.
 - Production publishing is intentionally manual and documented in the deployment docs.
 
+## Release flow
+
+1. Push changes to GitHub.
+2. Confirm the `CI` workflow passes.
+3. Trigger `Deploy to SuperHosting` manually from the Actions tab.
+4. Run the post-deploy smoke test from `docs/publish-checklist.md`.
+
 ## Useful notes
 
 - The app uses SQLite at `database/database.sqlite`.
