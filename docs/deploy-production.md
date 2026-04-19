@@ -52,7 +52,7 @@ php artisan view:cache
 
 ## 6. Web server
 
-- Point the document root to `public/`
+- Point the document root to the deployed `current/public/` directory
 - Enable HTTPS
 - Redirect HTTP to HTTPS
 - Pass requests to PHP-FPM
@@ -81,3 +81,29 @@ php artisan view:cache
 - Submit a repair request
 - Create a ticket as user and update it as admin
 - Confirm the customer receives the update email
+
+## 11. GitHub Actions deploy secrets
+
+Set these repository secrets before using the manual deploy workflow:
+
+- `DEPLOY_HOST`
+- `DEPLOY_PORT`
+- `DEPLOY_USER`
+- `DEPLOY_PATH`
+- `DEPLOY_SSH_KEY`
+
+The workflow is triggered manually from GitHub Actions. If your hosting account uses non-default binaries, override `php_bin` and `composer_bin` when you start the workflow.
+
+## 12. Rollback expectation
+
+- Keep the previous release snapshot in the server-side `_backups/` directory.
+- If a release fails after upload, restore the previous application directory and rerun Laravel cache warmup.
+- Never overwrite the production `.env` with repository data.
+
+## 13. First production deploy checks
+
+- Confirm SSH access works before triggering the workflow.
+- Confirm the document root points to `current/public/`.
+- Confirm the production `.env` already exists on the server.
+- Confirm writable permissions for `storage/` and `bootstrap/cache/`.
+- Trigger the `Deploy to SuperHosting` workflow manually from GitHub Actions.
