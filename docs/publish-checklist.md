@@ -2,7 +2,7 @@
 
 ## 1. Point the domain to the server
 
-- Point the web root to the Laravel `public/` directory.
+- Point the web root to the deployed `current/public/` directory.
 - Use a production `.env` instead of the local one.
 - Set `APP_ENV=production`
 - Set `APP_DEBUG=false`
@@ -82,11 +82,16 @@
 
 ## 5. Deploy and warm the app
 
-- Run `php artisan migrate --force`
-- Run `php artisan config:cache`
-- Run `php artisan route:cache`
-- Run `php artisan view:cache`
-- Run `npm run build`
+- Push the prepared branch to GitHub.
+- Confirm the `CI` workflow passes.
+- Set repository secrets for the manual deploy workflow:
+  - `DEPLOY_HOST`
+  - `DEPLOY_PORT`
+  - `DEPLOY_USER`
+  - `DEPLOY_PATH`
+  - `DEPLOY_SSH_KEY`
+- Trigger `Deploy to SuperHosting` manually from the GitHub Actions tab.
+- If needed for your hosting account, override `php_bin` and `composer_bin` when starting the workflow.
 
 ## 6. Security checks before publish
 
@@ -114,3 +119,14 @@
 - The public site already includes privacy policy, terms, sitemap, canonical URLs, and LocalBusiness schema.
 - Review stats are stored as a snapshot in `config/reviews.php`; update them when you want to refresh the public numbers.
 - Meta and Viber can require separate business verification, page/app review, or production approval outside the codebase.
+
+## 9. Manual smoke test after deploy
+
+- Open `/`
+- Open `/kontakti`
+- Register a user and verify the email code flow
+- Log in as admin and open the dashboard
+- Submit a repair request
+- Create or update a ticket
+- Confirm outbound email delivery
+- Confirm no new fatal errors in `storage/logs/laravel.log`

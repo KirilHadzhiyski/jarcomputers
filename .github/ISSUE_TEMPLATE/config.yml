@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Operations and deployment notes
+    url: https://github.com/KirilHadzhiyski/jarcomputers/blob/main/docs/publish-checklist.md
+    about: Review the publish checklist before opening hosting or deployment tasks.

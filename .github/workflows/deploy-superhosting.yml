@@ -1,0 +1,105 @@
+name: Deploy to SuperHosting
+
+on:
+  workflow_dispatch:
+    inputs:
+      php_bin:
+        description: PHP binary on the server
+        required: true
+        default: php
+      composer_bin:
+        description: Composer binary on the server
+        required: true
+        default: composer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --prefer-dist
+          npm ci
+          npm run build
+
+      - name: Prepare release archive
+        run: |
+          mkdir -p release
+          rsync -av --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "node_modules" \
+            --exclude "tests" \
+            --exclude ".env" \
+            --exclude "storage/logs" \
+            --exclude "storage/framework/cache/*" \
+            --exclude "storage/framework/sessions/*" \
+            --exclude "storage/framework/testing/*" \
+            --exclude "storage/framework/views/*" \
+            ./ release/
+          tar -czf release.tar.gz -C release .
+
+      - name: Upload release archive
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: release.tar.gz
+          target: ${{ secrets.DEPLOY_PATH }}/_incoming
+
+      - name: Deploy release on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+            mkdir -p _incoming _backups
+            rm -rf _release_tmp
+            mkdir -p _release_tmp
+            tar -xzf _incoming/release.tar.gz -C _release_tmp
+
+            if [ -f current/.env ]; then
+              cp current/.env _release_tmp/.env
+            fi
+
+            if [ -d current/storage ]; then
+              rm -rf _release_tmp/storage
+              cp -R current/storage _release_tmp/storage
+            fi
+
+            cd _release_tmp
+            ${{ inputs.composer_bin }} install --no-dev --optimize-autoloader --no-interaction
+            ${{ inputs.php_bin }} artisan migrate --force
+            ${{ inputs.php_bin }} artisan config:cache
+            ${{ inputs.php_bin }} artisan route:cache
+            ${{ inputs.php_bin }} artisan view:cache
+
+            cd ..
+            if [ -d current ]; then
+              mv current "_backups/$(date +%Y%m%d%H%M%S)-previous"
+            fi
+
+            mv _release_tmp current
+            rm -f _incoming/release.tar.gz
