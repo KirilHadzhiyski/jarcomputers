@@ -118,10 +118,12 @@ return [
         ],
     ],
     'models' => [
-        ['slug' => 'remont-iphone-11', 'name' => 'iPhone 11', 'series' => '11'],
-        ['slug' => 'remont-iphone-12', 'name' => 'iPhone 12', 'series' => '12'],
-        ['slug' => 'remont-iphone-13', 'name' => 'iPhone 13', 'series' => '13'],
-        ['slug' => 'remont-iphone-14', 'name' => 'iPhone 14', 'series' => '14'],
+        ['slug' => 'remont-iphone-11', 'name' => 'iPhone 11', 'series' => '11', 'image' => 'images/models/iphone-11.svg', 'accent' => '#7c3aed'],
+        ['slug' => 'remont-iphone-12', 'name' => 'iPhone 12', 'series' => '12', 'image' => 'images/models/iphone-12.svg', 'accent' => '#2563eb'],
+        ['slug' => 'remont-iphone-13', 'name' => 'iPhone 13', 'series' => '13', 'image' => 'images/models/iphone-13.svg', 'accent' => '#14b8a6'],
+        ['slug' => 'remont-iphone-14', 'name' => 'iPhone 14', 'series' => '14', 'image' => 'images/models/iphone-14.svg', 'accent' => '#f97316'],
+        ['slug' => 'remont-iphone-15', 'name' => 'iPhone 15', 'series' => '15', 'image' => 'images/models/iphone-15.svg', 'accent' => '#ec4899'],
+        ['slug' => 'remont-iphone-16', 'name' => 'iPhone 16', 'series' => '16', 'image' => 'images/models/iphone-16.svg', 'accent' => '#0ea5e9'],
     ],
     'cities' => [
         ['slug' => 'remont-iphone-sofia', 'name' => 'София', 'name_en' => 'Sofia'],
@@ -179,7 +181,7 @@ return [
     'faq_extra' => [
         [
             'q' => 'Какви модели iPhone ремонтирате?',
-            'a' => 'Ремонтираме всички модели iPhone – от iPhone 6 до най-новите модели. Специализирани сме в iPhone 11, 12, 13 и 14.',
+            'a' => 'Ремонтираме всички модели iPhone – от iPhone 6 до най-новите модели. Специализирани сме в iPhone 11, 12, 13, 14, 15 и 16.',
         ],
         [
             'q' => 'Мога ли да следя статуса на ремонта?',
@@ -199,15 +201,17 @@ return [
         ],
     ],
     'pricing_table' => [
-        ['service' => 'Смяна на дисплей', 'iphone11' => 'от 89 лв', 'iphone12' => 'от 109 лв', 'iphone13' => 'от 129 лв', 'iphone14' => 'от 149 лв'],
-        ['service' => 'Смяна на батерия', 'iphone11' => 'от 49 лв', 'iphone12' => 'от 55 лв', 'iphone13' => 'от 59 лв', 'iphone14' => 'от 65 лв'],
-        ['service' => 'Ремонт Face ID', 'iphone11' => 'от 119 лв', 'iphone12' => 'от 129 лв', 'iphone13' => 'от 139 лв', 'iphone14' => 'от 149 лв'],
-        ['service' => 'Ремонт камера', 'iphone11' => 'от 69 лв', 'iphone12' => 'от 79 лв', 'iphone13' => 'от 89 лв', 'iphone14' => 'от 99 лв'],
+        ['service' => 'Смяна на дисплей', 'iphone11' => 'от 89 €', 'iphone12' => 'от 109 €', 'iphone13' => 'от 129 €', 'iphone14' => 'от 149 €', 'iphone15' => 'от 169 €', 'iphone16' => 'от 189 €'],
+        ['service' => 'Смяна на батерия', 'iphone11' => 'от 49 €', 'iphone12' => 'от 55 €', 'iphone13' => 'от 59 €', 'iphone14' => 'от 65 €', 'iphone15' => 'от 69 €', 'iphone16' => 'от 75 €'],
+        ['service' => 'Ремонт Face ID', 'iphone11' => 'от 119 €', 'iphone12' => 'от 129 €', 'iphone13' => 'от 139 €', 'iphone14' => 'от 149 €', 'iphone15' => 'от 159 €', 'iphone16' => 'от 169 €'],
+        ['service' => 'Ремонт камера', 'iphone11' => 'от 69 €', 'iphone12' => 'от 79 €', 'iphone13' => 'от 89 €', 'iphone14' => 'от 99 €', 'iphone15' => 'от 109 €', 'iphone16' => 'от 119 €'],
     ],
     'model_problems' => [
         '11' => ['Счупен дисплей', 'Бърза разрядка на батерия', 'Face ID спира да работи', 'Проблеми с камерата', 'Заглушен звук'],
         '12' => ['Пукнато стъкло', 'Влошена батерия', 'Проблем с Face ID', 'Замъглена камера', 'Проблеми с Wi-Fi'],
         '13' => ['Счупен OLED дисплей', 'Бърз разряд', 'Face ID грешки', 'Камера не фокусира', 'Мигащ екран'],
         '14' => ['Счупен дисплей', 'Батерия под 80%', 'Face ID проблеми', 'Камера шум', 'Проблеми със зареждане'],
+        '15' => ['Напукан гръб', 'Батерия с бърз разряд', 'Dynamic Island проблеми', 'Камера без автофокус', 'USB-C порт проблеми'],
+        '16' => ['Пукнат дисплей', 'Проблеми с вертикалната камера', 'Батерия с кратък живот', 'Face ID и сензори', 'Проблеми със зареждане през USB-C'],
     ],
 ];

@@ -40,7 +40,7 @@ class SiteController extends Controller
             'service' => $service,
             'faqItems' => SiteData::serviceFaq($service),
             'seo' => [
-                'title' => "{$service['name']} iPhone - от {$service['price_from']} лв | {$site['brand']}",
+                'title' => "{$service['name']} iPhone - ".SiteData::formatPrice($service['price_from'])." | {$site['brand']}",
                 'description' => "{$service['description']} Гаранция до 12 месеца, безплатна диагностика и куриерска услуга в цяла България от {$site['brand']}.",
             ],
         ]));
@@ -93,7 +93,7 @@ class SiteController extends Controller
             'page' => $page,
             'faqItems' => SiteData::seoFaq($page['service'], $page['model']),
             'seo' => [
-                'title' => "{$page['service']['name']} {$page['model']['name']} - от {$page['service']['price_from']} лв | {$site['brand']}",
+                'title' => "{$page['service']['name']} {$page['model']['name']} - ".SiteData::formatPrice($page['service']['price_from'])." | {$site['brand']}",
                 'description' => "{$page['service']['name']} {$page['model']['name']} от {$site['brand']}. Бързо, с гаранция до 12 месеца и куриерска услуга в цяла България. Безплатна диагностика.",
             ],
         ]));

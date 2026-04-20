@@ -79,7 +79,7 @@
     <section class="page-section">
         <div class="site-container text-center">
             <h2 class="section-heading">Цена за {{ mb_strtolower($service['name']) }} на {{ $model['name'] }}</h2>
-            <p class="mt-4 text-5xl font-bold text-blue-700">от {{ $service['price_from'] }} лв</p>
+            <p class="mt-4 text-5xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
             <p class="mt-4 text-base text-slate-600">Окончателната цена зависи от диагностиката.</p>
             <p class="mt-2 text-sm text-slate-500">Време за ремонт: 24–48 часа • Гаранция: до 12 месеца</p>
         </div>
@@ -95,7 +95,7 @@
                     @continue($related['slug'] === $service['slug'])
                     <a href="{{ url(\App\Support\SiteData::seoSlug($related, $model)) }}" class="card-service block text-center">
                         <h3 class="text-lg font-semibold text-slate-950">{{ $related['name'] }} {{ $model['name'] }}</h3>
-                        <p class="mt-3 text-lg font-bold text-blue-700">от {{ $related['price_from'] }} лв</p>
+                        <p class="mt-3 text-lg font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($related['price_from']) }}</p>
                     </a>
                 @endforeach
                 <a href="{{ url($model['slug']) }}" class="card-service block text-center">

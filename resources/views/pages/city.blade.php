@@ -56,7 +56,7 @@
                 @foreach ($services as $service)
                     <a href="{{ url($service['slug']) }}" class="card-service block text-center">
                         <h3 class="text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
-                        <p class="mt-3 text-2xl font-bold text-blue-700">от {{ $service['price_from'] }} лв</p>
+                        <p class="mt-3 text-2xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
                         <p class="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">с гаранция до 12 мес.</p>
                     </a>
                 @endforeach

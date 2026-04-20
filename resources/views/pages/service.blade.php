@@ -77,7 +77,7 @@
     <section class="page-section">
         <div class="site-container text-center">
             <h2 class="section-heading">Цена за {{ mb_strtolower($service['name']) }}</h2>
-            <p class="mt-4 text-5xl font-bold text-blue-700">от {{ $service['price_from'] }} лв</p>
+            <p class="mt-4 text-5xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
             <p class="mt-4 text-base text-slate-600">Окончателната цена зависи от модела и диагностиката.</p>
         </div>
     </section>

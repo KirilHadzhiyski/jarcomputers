@@ -15,9 +15,11 @@
                         Професионален ремонт на iPhone от
                         <span class="gradient-text">{{ $site['brand'] }}</span>
                     </h1>
+                    @if (false)
                     <p class="mt-6 max-w-2xl text-lg leading-8 text-[var(--hero-muted)] md:text-xl">
                         Обновен backend за заявки, имейл известия и готовност за WhatsApp, Viber и Messenger интеграции при пускане на домейна.
                     </p>
+                    @endif
                     <div class="mt-8 flex flex-col gap-4 sm:flex-row">
                         <a href="{{ route('contact') }}#repair-form" class="btn-primary">Поръчай ремонт</a>
                         <a href="tel:{{ $site['phone_href'] }}" class="btn-secondary">Попитай за цена</a>
@@ -53,7 +55,7 @@
                         <span class="badge-mark">{{ $service['badge'] }}</span>
                         <h3 class="mt-5 text-xl font-semibold text-slate-950">{{ $service['name'] }}</h3>
                         <p class="mt-3 text-sm leading-7 text-slate-600">{{ $service['description'] }}</p>
-                        <p class="mt-4 text-sm font-semibold text-blue-700">от {{ $service['price_from'] }} лв</p>
+                        <p class="mt-4 text-sm font-semibold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
                     </a>
                 @endforeach
             </div>
@@ -135,7 +137,7 @@
                 @foreach ($services as $service)
                     <div class="card-service text-center">
                         <h3 class="text-lg font-semibold text-slate-950">{{ $service['short_name'] }}</h3>
-                        <p class="mt-3 text-3xl font-bold text-blue-700">от {{ $service['price_from'] }} лв</p>
+                        <p class="mt-3 text-3xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
                         <p class="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">с гаранция до 12 мес.</p>
                     </div>
                 @endforeach

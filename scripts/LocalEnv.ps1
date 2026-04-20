@@ -2,6 +2,37 @@ Set-StrictMode -Version Latest
 
 $script:ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 
+function Find-WingetPackageExecutable {
+    param(
+        [string[]]$PackagePrefixes,
+        [string]$RelativePath
+    )
+
+    $packagesRoot = Join-Path $env:LOCALAPPDATA 'Microsoft\WinGet\Packages'
+
+    if (-not (Test-Path -LiteralPath $packagesRoot)) {
+        return $null
+    }
+
+    foreach ($prefix in $PackagePrefixes) {
+        $package = Get-ChildItem -LiteralPath $packagesRoot -Directory -Filter "$prefix*" |
+            Sort-Object Name -Descending |
+            Select-Object -First 1
+
+        if ($null -eq $package) {
+            continue
+        }
+
+        $candidate = Join-Path $package.FullName $RelativePath
+
+        if (Test-Path -LiteralPath $candidate) {
+            return $candidate
+        }
+    }
+
+    return $null
+}
+
 function Resolve-ToolOrCommand {
     param(
         [string]$BundledPath,
@@ -31,10 +62,27 @@ function Enter-ProjectRoot {
 }
 
 function Get-PhpExe {
-    return Resolve-ToolOrCommand `
-        -BundledPath (Join-Path (Get-ProjectRoot) 'tools\php\php.exe') `
-        -CommandName 'php.exe' `
-        -MissingMessage 'PHP runtime not found. Install PHP or restore tools\php.'
+    $bundled = Join-Path (Get-ProjectRoot) 'tools\php\php.exe'
+
+    if (Test-Path -LiteralPath $bundled) {
+        return $bundled
+    }
+
+    $command = Get-Command 'php.exe' -ErrorAction SilentlyContinue
+
+    if ($command) {
+        return $command.Source
+    }
+
+    $wingetPhp = Find-WingetPackageExecutable `
+        -PackagePrefixes @('PHP.PHP.8.5', 'PHP.PHP.8.4', 'PHP.PHP.8.3', 'PHP.PHP.8.2') `
+        -RelativePath 'php.exe'
+
+    if ($wingetPhp) {
+        return $wingetPhp
+    }
+
+    throw 'PHP runtime not found. Install PHP or restore tools\php.'
 }
 
 function Get-ComposerPhar {
@@ -47,6 +95,15 @@ function Get-ComposerPhar {
 function Get-NodeDir {
     $nodeRoot = Join-Path (Get-ProjectRoot) 'tools\node'
     if (-not (Test-Path -LiteralPath $nodeRoot)) {
+        foreach ($candidate in @(
+            (Join-Path $env:ProgramFiles 'nodejs'),
+            (Join-Path ${env:ProgramFiles(x86)} 'nodejs')
+        )) {
+            if ($candidate -and (Test-Path -LiteralPath (Join-Path $candidate 'npm.cmd'))) {
+                return $candidate
+            }
+        }
+
         return $null
     }
 
@@ -99,6 +156,25 @@ function Get-NpxExe {
     throw 'npx not found. Install Node.js or restore tools\node.'
 }
 
+function Get-GitExe {
+    foreach ($candidate in @(
+        (Join-Path $env:ProgramFiles 'Git\cmd\git.exe'),
+        (Join-Path ${env:ProgramFiles(x86)} 'Git\cmd\git.exe')
+    )) {
+        if ($candidate -and (Test-Path -LiteralPath $candidate)) {
+            return $candidate
+        }
+    }
+
+    $command = Get-Command 'git.exe' -ErrorAction SilentlyContinue
+
+    if ($command) {
+        return $command.Source
+    }
+
+    return $null
+}
+
 function Initialize-LocalEnvironment {
     Enter-ProjectRoot
 
@@ -118,11 +194,22 @@ function Initialize-LocalEnvironment {
 
     $phpParent = Split-Path (Get-PhpExe) -Parent
     $nodeDir = Get-NodeDir
+    $gitExe = Get-GitExe
+
+    $pathEntries = @($phpParent)
 
     if ($nodeDir) {
-        $env:PATH = "$phpParent;$nodeDir;$env:PATH"
-    } else {
-        $env:PATH = "$phpParent;$env:PATH"
+        $pathEntries += $nodeDir
+    }
+
+    if ($gitExe) {
+        $pathEntries += (Split-Path $gitExe -Parent)
+    }
+
+    $pathPrefix = ($pathEntries | Where-Object { $_ } | Select-Object -Unique) -join ';'
+
+    if ($pathPrefix) {
+        $env:PATH = "$pathPrefix;$env:PATH"
     }
 
     $env:COMPOSER_HOME = (Resolve-Path '.composer').Path

@@ -13,8 +13,10 @@ class SitePagesTest extends TestCase
             '/remont-iphone',
             '/smqna-displei-iphone',
             '/remont-iphone-13',
+            '/remont-iphone-16',
             '/remont-iphone-sofia',
             '/smqna-bateria-iphone-14',
+            '/smqna-displei-iphone-16',
             '/kontakti',
             '/ceni',
             '/za-nas',
@@ -43,5 +45,15 @@ class SitePagesTest extends TestCase
         $this->get('/nesashtestvuvashta-stranica')
             ->assertNotFound()
             ->assertSee('Страницата не беше намерена', false);
+    }
+
+    public function test_model_page_contains_carousel_for_all_supported_iphone_series(): void
+    {
+        $this->get('/remont-iphone-11')
+            ->assertOk()
+            ->assertSee('iPhone 11 до iPhone 16', false)
+            ->assertSee('/remont-iphone-16', false)
+            ->assertSee('iPhone 15', false)
+            ->assertSee('iPhone 16', false);
     }
 }

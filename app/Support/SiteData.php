@@ -64,7 +64,43 @@ class SiteData
 
     public static function pricingTable(): array
     {
-        return config('site.pricing_table', []);
+        return collect(config('site.pricing_table', []))
+            ->map(fn (array $row) => [
+                'service' => $row['service'],
+                'iphone11' => self::formatPrice($row['iphone11']),
+                'iphone12' => self::formatPrice($row['iphone12']),
+                'iphone13' => self::formatPrice($row['iphone13']),
+                'iphone14' => self::formatPrice($row['iphone14']),
+                'iphone15' => self::formatPrice($row['iphone15'] ?? null),
+                'iphone16' => self::formatPrice($row['iphone16'] ?? null),
+            ])
+            ->all();
+    }
+
+    public static function formatPrice(int|float|string|null $value, bool $withFrom = true): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        if (is_string($value)) {
+            $normalized = trim((string) preg_replace('/\s+/u', ' ', $value));
+            $amount = trim((string) preg_replace('/[^\d.,]/u', '', $normalized));
+            $hasFromPrefix = str_starts_with(mb_strtolower($normalized), 'от ');
+
+            if ($amount === '') {
+                return self::replaceCurrency($normalized);
+            }
+
+            return (($withFrom || $hasFromPrefix) ? 'от ' : '').$amount.' €';
+        }
+
+        return ($withFrom ? 'от ' : '').$value.' €';
+    }
+
+    public static function replaceCurrency(string $value): string
+    {
+        return str_replace([' лв', 'лв'], [' €', '€'], $value);
     }
 
     public static function faqHome(): array
@@ -141,7 +177,7 @@ class SiteData
         return [
             [
                 'q' => 'Колко струва '.Str::lower($service['name']).' на iPhone?',
-                'a' => "Цената за ".Str::lower($service['name'])." започва от {$service['price_from']} лв. Окончателната цена зависи от модела и състоянието на устройството. Диагностиката е безплатна.",
+                'a' => 'Цената за '.Str::lower($service['name']).' започва от '.self::formatPrice($service['price_from']).'. Окончателната цена зависи от модела и състоянието на устройството. Диагностиката е безплатна.',
             ],
             [
                 'q' => 'Колко време отнема ремонтът?',
@@ -167,7 +203,7 @@ class SiteData
         return [
             [
                 'q' => "Колко струва ремонт на {$model['name']}?",
-                'a' => "Цените за ремонт на {$model['name']} започват от 49 лв за смяна на батерия. Окончателната цена зависи от вида на ремонта.",
+                'a' => 'Цените за ремонт на '.$model['name'].' започват от '.self::formatPrice(49).' за смяна на батерия. Окончателната цена зависи от вида на ремонта.',
             ],
             [
                 'q' => "Колко време отнема ремонт на {$model['name']}?",
@@ -215,7 +251,7 @@ class SiteData
         return [
             [
                 'q' => 'Колко струва '.Str::lower($service['name'])." на {$model['name']}?",
-                'a' => "Цената за ".Str::lower($service['name'])." на {$model['name']} зависи от диагностиката. Цените започват от {$service['price_from']} лв. Диагностиката е безплатна.",
+                'a' => 'Цената за '.Str::lower($service['name']).' на '.$model['name'].' зависи от диагностиката. Цените започват от '.self::formatPrice($service['price_from']).'. Диагностиката е безплатна.',
             ],
             [
                 'q' => 'Колко време отнема?',

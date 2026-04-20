@@ -32,7 +32,7 @@
                         <span class="badge-mark mx-auto">{{ $service['badge'] }}</span>
                         <h3 class="mt-5 text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
                         <p class="mt-3 text-sm leading-7 text-slate-600">{{ $service['description'] }}</p>
-                        <p class="mt-4 text-2xl font-bold text-blue-700">от {{ $service['price_from'] }} лв</p>
+                        <p class="mt-4 text-2xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
                     </a>
                 @endforeach
             </div>
