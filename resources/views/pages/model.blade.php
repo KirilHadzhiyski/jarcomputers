@@ -115,11 +115,15 @@
             <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($services as $service)
                     @php($price = collect($pricing)->firstWhere('service', $service['name']))
-                    <a href="{{ url(\App\Support\SiteData::seoSlug($service, $model)) }}" class="card-service block text-center">
-                        <h3 class="text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
-                        <p class="mt-3 text-2xl font-bold text-blue-700">{{ $price['price'] ?? 'Попитайте ни' }}</p>
+                    <div class="card-service text-center">
+                        <a href="{{ url(\App\Support\SiteData::seoSlug($service, $model)) }}" class="block">
+                            <h3 class="text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
+                        </a>
+                        <a href="{{ route('pricing') }}" class="mt-3 inline-block text-2xl font-bold text-blue-700 transition hover:text-blue-800 hover:underline">
+                            {{ $price['price'] ?? 'Попитайте ни' }}
+                        </a>
                         <p class="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">с гаранция до 12 мес.</p>
-                    </a>
+                    </div>
                 @endforeach
             </div>
         </div>

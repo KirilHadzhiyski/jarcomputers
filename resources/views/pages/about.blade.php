@@ -6,8 +6,9 @@
     <section class="hero-section page-section">
         <div class="site-container max-w-4xl text-center">
             <h1 class="text-4xl font-bold md:text-5xl">За {{ $site['brand'] }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-lg leading-8 text-[var(--hero-muted)]">
-                Физически сервиз в Благоевград с официални контакти, публични рейтинги и обновена инфраструктура за заявки и комуникация.
+            <p class="mx-auto mt-4 max-w-3xl text-lg leading-8 text-[var(--hero-muted)]">
+                От 2004 година работим на пазара в Благоевград като представител на JAR Computers,
+                с фокус върху дистрибуция, продажби, сервиз и дългосрочна поддръжка.
             </p>
         </div>
     </section>
@@ -16,16 +17,18 @@
         <div class="site-container max-w-5xl">
             <div class="space-y-5 text-base leading-8 text-slate-600">
                 <p>
-                    {{ $site['brand'] }} работи като специализиран сервиз за ремонт на iPhone с обслужване на място в Благоевград и логистика за клиенти от цяла България.
-                    Сайтът вече е подготвен с централен backend за заявки, имейл известия и проследима история на комуникацията.
+                    От началото на 2004 година развиваме дейността си в Благоевград като представител на JAR Computers
+                    за региона. През годините изградихме стабилно присъствие както в продажбата и дистрибуцията на техника,
+                    така и в сервизното обслужване на крайни клиенти и бизнеси.
                 </p>
                 <p>
-                    Контактите, адресът и работното време са подравнени по официалната информация за обекта. Добавени са готови конфигурации за собствен домейн,
-                    фирмен имейл и webhook интеграции за WhatsApp, Viber и Facebook Messenger, така че след покупка на домейн да се настроят само реалните токени и DNS записи.
+                    Работим както с хардуерни продажби и доставки, така и със сервиз, диагностика и поддръжка.
+                    Това ни позволява да предложим завършено обслужване – от консултация и доставка до ремонт,
+                    гаранционно съдействие и последваща комуникация с клиента.
                 </p>
                 <p>
-                    В публичната част на сайта са добавени snapshot рейтинги и статистики от наличните външни платформи, както и задължителни страници за поверителност,
-                    общи условия, robots.txt и sitemap.xml.
+                    За ремонтите на iPhone разчитаме на ясен процес, реални срокове, видими цени и публични оценки.
+                    Поддържаме физически обект в Благоевград и обслужваме клиенти от цяла България с куриер в двете посоки.
                 </p>
             </div>
 
@@ -43,7 +46,7 @@
     <section class="page-section section-soft">
         <div class="site-container max-w-5xl">
             <div class="text-center">
-                <h2 class="section-heading">Какво е подготвено</h2>
+                <h2 class="section-heading">С какво помагаме</h2>
             </div>
             <div class="mt-10 grid gap-6 sm:grid-cols-3">
                 @foreach ($values as $value)
@@ -57,6 +60,6 @@
         </div>
     </section>
 
-    @include('partials.review-summary', ['sectionClass' => 'page-section'])
+    @include('partials.review-summary', ['sectionClass' => 'page-section', 'sectionId' => 'reviews', 'eyebrow' => 'Публични отзиви и ревюта'])
     @include('partials.cta-section')
 @endsection

@@ -38,7 +38,7 @@
             <div class="mt-10 grid gap-6 md:grid-cols-5">
                 @foreach ($steps as $step)
                     <div class="card-service text-center">
-                                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">{{ $step['num'] }}</div>
+                        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground">{{ $step['num'] }}</div>
                         <h3 class="mt-4 text-sm font-semibold text-slate-950">{{ $step['title'] }}</h3>
                         <p class="mt-2 text-xs leading-6 text-slate-600">{{ $step['desc'] }}</p>
                     </div>
@@ -54,11 +54,11 @@
             </div>
             <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($services as $service)
-                    <a href="{{ url($service['slug']) }}" class="card-service block text-center">
-                        <h3 class="text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
-                        <p class="mt-3 text-2xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
+                    <div class="card-service text-center">
+                        <a href="{{ url($service['slug']) }}" class="block text-lg font-semibold text-slate-950">{{ $service['name'] }}</a>
+                        <a href="{{ route('pricing') }}" class="mt-3 inline-block text-2xl font-bold text-blue-700 transition hover:text-blue-800 hover:underline">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</a>
                         <p class="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">с гаранция до 12 мес.</p>
-                    </a>
+                    </div>
                 @endforeach
             </div>
         </div>

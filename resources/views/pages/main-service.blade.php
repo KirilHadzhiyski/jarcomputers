@@ -28,12 +28,12 @@
             </div>
             <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($services as $service)
-                    <a href="{{ url($service['slug']) }}" class="card-service block text-center">
+                    <div class="card-service text-center">
                         <span class="badge-mark mx-auto">{{ $service['badge'] }}</span>
-                        <h3 class="mt-5 text-lg font-semibold text-slate-950">{{ $service['name'] }}</h3>
+                        <a href="{{ url($service['slug']) }}" class="mt-5 block text-lg font-semibold text-slate-950">{{ $service['name'] }}</a>
                         <p class="mt-3 text-sm leading-7 text-slate-600">{{ $service['description'] }}</p>
-                        <p class="mt-4 text-2xl font-bold text-blue-700">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</p>
-                    </a>
+                        <a href="{{ route('pricing') }}" class="mt-4 inline-block text-2xl font-bold text-blue-700 transition hover:text-blue-800 hover:underline">{{ \App\Support\SiteData::formatPrice($service['price_from']) }}</a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -46,10 +46,10 @@
             </div>
             <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($models as $model)
-                    <a href="{{ url($model['slug']) }}" class="card-service block text-center">
-                        <h3 class="text-lg font-semibold text-slate-950">Ремонт {{ $model['name'] }}</h3>
-                        <p class="mt-2 text-sm text-slate-600">Виж всички услуги и ориентировъчни цени</p>
-                    </a>
+                    <div class="card-service text-center">
+                        <a href="{{ url($model['slug']) }}" class="block text-lg font-semibold text-slate-950">Ремонт {{ $model['name'] }}</a>
+                        <a href="{{ route('pricing') }}" class="mt-2 inline-block text-sm text-blue-700 transition hover:text-blue-800 hover:underline">Виж ориентировъчни цени</a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -63,7 +63,7 @@
             <div class="mt-10 grid gap-6 md:grid-cols-5">
                 @foreach ($steps as $step)
                     <div class="card-service text-center">
-                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">{{ $step['num'] }}</div>
+                        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground">{{ $step['num'] }}</div>
                         <h3 class="mt-4 text-base font-semibold text-slate-950">{{ $step['title'] }}</h3>
                         <p class="mt-2 text-sm leading-6 text-slate-600">{{ $step['desc'] }}</p>
                     </div>

@@ -30,14 +30,27 @@ class SitePagesTest extends TestCase
         }
     }
 
-    public function test_home_page_contains_primary_call_to_action_and_review_stats(): void
+    public function test_home_page_contains_primary_call_to_action_review_stats_and_trust_links(): void
     {
         $this->get('/')
             ->assertOk()
             ->assertSee('Професионален ремонт на iPhone', false)
             ->assertSee('Поръчай ремонт', false)
             ->assertSee('Google Maps', false)
-            ->assertSee('4.7/5', false);
+            ->assertSee('4.7/5', false)
+            ->assertSee('/#warranty', false)
+            ->assertSee('/#courier', false)
+            ->assertSee('Виж Google отзивите', false);
+    }
+
+    public function test_about_page_mentions_company_history_and_distribution_activity(): void
+    {
+        $this->get('/za-nas')
+            ->assertOk()
+            ->assertSee('2004', false)
+            ->assertSee('представител на JAR Computers', false)
+            ->assertSee('дистрибуция', false)
+            ->assertSee('Публични отзиви и ревюта', false);
     }
 
     public function test_unknown_page_returns_custom_404(): void
@@ -47,13 +60,28 @@ class SitePagesTest extends TestCase
             ->assertSee('Страницата не беше намерена', false);
     }
 
-    public function test_model_page_contains_carousel_for_all_supported_iphone_series(): void
+    public function test_model_page_contains_carousel_and_price_links_to_pricing_page(): void
     {
         $this->get('/remont-iphone-11')
             ->assertOk()
             ->assertSee('iPhone 11 до iPhone 16', false)
             ->assertSee('/remont-iphone-16', false)
             ->assertSee('iPhone 15', false)
-            ->assertSee('iPhone 16', false);
+            ->assertSee('iPhone 16', false)
+            ->assertSee('/ceni', false);
+    }
+
+    public function test_price_sections_on_service_variants_point_to_the_pricing_page(): void
+    {
+        foreach ([
+            '/remont-iphone',
+            '/smqna-displei-iphone',
+            '/remont-iphone-sofia',
+            '/smqna-displei-iphone-11',
+        ] as $uri) {
+            $this->get($uri)
+                ->assertOk()
+                ->assertSee('/ceni', false);
+        }
     }
 }

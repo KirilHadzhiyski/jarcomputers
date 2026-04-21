@@ -1,9 +1,10 @@
 @php
     $aggregate = $aggregateReview ?? \App\Support\SiteData::aggregateReview();
     $platforms = $reviewPlatforms ?? \App\Support\SiteData::reviewPlatforms();
+    $primaryPlatform = collect($platforms)->firstWhere('primary', true) ?? $platforms[0] ?? null;
     $scanDate = ! empty($aggregate['scan_date']) ? \Illuminate\Support\Carbon::parse($aggregate['scan_date'])->format('d.m.Y') : null;
 @endphp
-<section class="page-section {{ $sectionClass ?? 'section-soft' }}">
+<section id="{{ $sectionId ?? null }}" class="page-section {{ $sectionClass ?? 'section-soft' }}">
     <div class="site-container">
         <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             <div class="card-soft">
@@ -18,6 +19,11 @@
                 <a href="{{ $aggregate['source_url'] }}" class="btn-secondary-dark mt-6" target="_blank" rel="noreferrer">
                     Виж източника
                 </a>
+                @if ($primaryPlatform)
+                    <a href="{{ $primaryPlatform['source_url'] }}" class="btn-primary mt-3" target="_blank" rel="noreferrer">
+                        Виж Google отзивите
+                    </a>
+                @endif
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
