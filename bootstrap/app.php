@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append([
+            \App\Http\Middleware\CanonicalHostRedirect::class,
             \App\Http\Middleware\SecurityHeaders::class,
         ]);
 

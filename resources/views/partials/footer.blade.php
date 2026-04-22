@@ -1,16 +1,17 @@
 @php($site = config('site'))
+@php($brandLogo = asset('images/branding/jar-computers-logo-blue.svg').'?v='.filemtime(public_path('images/branding/jar-computers-logo-blue.svg')))
 <footer class="section-dark mt-16 border-t border-white/10">
     <div class="site-container py-14">
         <div class="grid gap-10 lg:grid-cols-4">
             <div class="space-y-4">
                 <div>
-                    <div class="footer-brand-lockup">
-                        <p class="footer-brand-title">
-                            <span class="footer-brand-jar">JAR</span>
-                            <span class="footer-brand-computers">computers</span>
-                        </p>
-                        <p class="footer-brand-city">{{ $site['city_name'] }}</p>
-                    </div>
+                    <a href="{{ route('home') }}" class="footer-brand-lockup" aria-label="{{ $site['brand'] }}">
+                        <img
+                            src="{{ $brandLogo }}"
+                            alt="{{ $site['brand'] }}"
+                            class="footer-brand-logo-image"
+                        >
+                    </a>
                     <p class="mt-3 text-sm leading-7 text-slate-300">
                         Професионален ремонт на iPhone с гаранция, проследима комуникация и куриерска услуга в цяла България.
                     </p>
@@ -34,11 +35,8 @@
             </div>
 
             <div>
-                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Канали</p>
+                <p class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">Социални мрежи</p>
                 <div class="space-y-2 text-sm text-slate-300">
-                    @foreach ($site['messaging_channels'] as $channel)
-                        <a class="block hover:text-white" href="{{ $channel['href'] }}" target="_blank" rel="noreferrer">{{ $channel['label'] }}</a>
-                    @endforeach
                     @foreach ($site['socials'] as $social)
                         <a class="block hover:text-white" href="{{ $social['href'] }}" target="_blank" rel="noreferrer">{{ $social['label'] }}</a>
                     @endforeach

@@ -2,12 +2,16 @@
 
 @section('content')
     @php($site = config('site'))
+    @php($viberChannel = collect($site['messaging_channels'])->firstWhere('key', 'viber'))
+    @php($viberLink = $viberChannel['href'] ?? 'viber://chat?number='.rawurlencode('+359878369024'))
+    @php($viberDownloadUrl = 'https://www.viber.com/en/download/')
+    @php($viberDisplayNumber = '+359 878 369 024')
 
     <section class="hero-section page-section">
         <div class="site-container max-w-4xl text-center">
             <h1 class="text-4xl font-bold md:text-5xl">Свържете се с нас</h1>
             <p class="mx-auto mt-4 max-w-2xl text-lg leading-8 text-[var(--hero-muted)]">
-                Телефон, имейл и подготвени чат канали. Онлайн формата записва заявката директно в backend системата.
+                Телефон, имейл и Viber за бърза връзка със сервиза. Онлайн формата записва заявката директно в backend системата и я изпраща към нашия екип.
             </p>
         </div>
     </section>
@@ -36,9 +40,30 @@
                         </a>
 
                         <a href="mailto:{{ $site['email'] }}" class="card-service block">
-                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Публичен имейл</p>
+                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Имейл</p>
                             <p class="mt-3 text-xl font-bold text-slate-950">{{ $site['email'] }}</p>
                         </a>
+
+                        <div class="card-service">
+                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Viber чат</p>
+                            <p class="mt-3 text-base leading-7 text-slate-700">
+                                Пишете ни директно във Viber на {{ $viberDisplayNumber }}. Подготвили сме отделни бутони за mobile и desktop.
+                            </p>
+                            <div class="mt-5 flex flex-wrap gap-3">
+                                <a href="{{ $viberLink }}" class="btn-secondary-dark" aria-label="Отвори Viber chat на mobile">
+                                    Viber mobile
+                                </a>
+                                <a href="{{ $viberLink }}" class="btn-secondary-dark" aria-label="Отвори Viber chat на desktop">
+                                    Viber desktop
+                                </a>
+                            </div>
+                            <p class="mt-4 text-sm leading-6 text-slate-500">
+                                Ако приложението не се отвори автоматично, използвайте
+                                <a href="{{ $viberDownloadUrl }}" class="font-semibold text-blue-700 underline underline-offset-4" target="_blank" rel="noreferrer">
+                                    официалната страница за изтегляне на Viber
+                                </a>.
+                            </p>
+                        </div>
 
                         <div class="card-service">
                             <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Адрес</p>
@@ -46,17 +71,6 @@
                             <a href="{{ $site['google_maps_url'] }}" class="btn-secondary-dark mt-5" target="_blank" rel="noreferrer">
                                 Отвори в Google Maps
                             </a>
-                        </div>
-
-                        <div class="card-service">
-                            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Чат канали</p>
-                            <div class="mt-4 flex flex-wrap gap-3">
-                                @foreach ($messagingChannels as $channel)
-                                    <a href="{{ $channel['href'] }}" class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700" target="_blank" rel="noreferrer">
-                                        {{ $channel['label'] }}
-                                    </a>
-                                @endforeach
-                            </div>
                         </div>
 
                         <div class="card-service">

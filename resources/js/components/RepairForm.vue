@@ -51,12 +51,10 @@ const form = reactive({
 
 const contactOptions = [
     { value: 'phone', label: 'Телефон' },
-    { value: 'viber', label: 'Viber' },
-    { value: 'whatsapp', label: 'WhatsApp' },
     { value: 'email', label: 'Имейл' },
 ];
 
-const helperText = computed(() => `Shadcn-vue форма • Безплатна диагностика • ${props.brand}`);
+const helperText = computed(() => `Безплатна диагностика • Отговор в работно време • ${props.brand}`);
 
 async function submitForm() {
     loading.value = true;
@@ -96,11 +94,11 @@ async function submitForm() {
 
     <form v-else class="card-soft space-y-5" @submit.prevent="submitForm">
         <div class="flex flex-col gap-2">
-            <Badge variant="secondary" class="w-fit">Shadcn-vue</Badge>
+            <Badge variant="secondary" class="w-fit">Онлайн заявка</Badge>
             <div>
                 <h3 class="text-xl font-semibold text-foreground">Заявка за ремонт</h3>
                 <p class="mt-2 text-sm leading-7 text-muted-foreground">
-                    Формата записва заявката в backend системата и създава комуникационна история за телефона ви.
+                    Формата записва заявката в backend системата и изпраща известие към сервизния ни имейл.
                 </p>
             </div>
         </div>

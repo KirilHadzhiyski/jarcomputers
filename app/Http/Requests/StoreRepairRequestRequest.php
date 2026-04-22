@@ -21,7 +21,7 @@ class StoreRepairRequestRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:50'],
             'model' => ['nullable', 'string', 'max:50'],
             'issue' => ['required', 'string', 'max:1000'],
-            'preferred_contact' => ['nullable', Rule::in(['phone', 'viber', 'whatsapp', 'email'])],
+            'preferred_contact' => ['nullable', Rule::in(['phone', 'email'])],
             'source_page' => ['nullable', 'string', 'max:255'],
             'form_fragment' => ['nullable', 'string', 'max:50'],
             'gdpr_consent' => ['accepted'],

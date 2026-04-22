@@ -17,8 +17,6 @@ class User extends Authenticatable
     public const CONTACT_CHANNEL_LABELS = [
         'email' => 'Имейл',
         'phone' => 'Телефон',
-        'viber' => 'Viber',
-        'whatsapp' => 'WhatsApp',
     ];
 
     protected $fillable = [

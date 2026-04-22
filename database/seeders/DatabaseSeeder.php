@@ -12,11 +12,11 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(AdminUserSeeder::class);
+
         if (! app()->environment(['local', 'testing'])) {
             return;
         }
-
-        $this->call(AdminUserSeeder::class);
 
         User::query()->updateOrCreate(
             ['email' => 'test@example.com'],

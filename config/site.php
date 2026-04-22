@@ -2,8 +2,8 @@
 
 $primaryPhone = env('SITE_PHONE_E164', '+359878369024');
 $landlinePhone = env('SITE_LANDLINE_E164', '+35973831212');
-$publicEmail = env('SITE_PUBLIC_EMAIL', 'blagoevgrad@jarcomputers.com');
-$supportEmail = env('SITE_SUPPORT_EMAIL', 'office@jarcomputers.com');
+$publicEmail = env('SITE_PUBLIC_EMAIL', 'office_bl@jarcomputers.com');
+$supportEmail = env('SITE_SUPPORT_EMAIL', 'office_bl@jarcomputers.com');
 $facebookPageUsername = env('FACEBOOK_PAGE_USERNAME', 'JAR.bg');
 
 return [
@@ -28,8 +28,8 @@ return [
         'lng' => (float) env('SITE_LONGITUDE', 23.0954484),
     ],
     'hours' => [
-        'Понеделник – Петък: 09:00 – 19:00',
-        'Събота: 10:00 – 15:00',
+        'Понеделник – Петък: 10:00 – 18:00',
+        'Събота: 10:00 – 14:00',
         'Неделя: Почивен ден',
     ],
     'socials' => [

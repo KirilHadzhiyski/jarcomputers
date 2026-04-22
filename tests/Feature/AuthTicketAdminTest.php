@@ -103,7 +103,7 @@ class AuthTicketAdminTest extends TestCase
             'name' => 'Updated Pending User',
             'email' => 'pending@example.com',
             'phone' => '+359811111111',
-            'preferred_contact_channel' => 'whatsapp',
+            'preferred_contact_channel' => 'phone',
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
         ]);
@@ -113,7 +113,7 @@ class AuthTicketAdminTest extends TestCase
             'email' => 'pending@example.com',
             'name' => 'Updated Pending User',
             'phone' => '+359811111111',
-            'preferred_contact_channel' => 'whatsapp',
+            'preferred_contact_channel' => 'phone',
             'email_verified_at' => null,
         ]);
         $this->assertTrue(Hash::check('NewPassword123', User::query()->where('email', 'pending@example.com')->firstOrFail()->password));
@@ -230,7 +230,7 @@ class AuthTicketAdminTest extends TestCase
         $profileResponse = $this->actingAs($user)->put('/dashboard/profile', [
             'name' => 'Updated User',
             'phone' => '+359877000999',
-            'preferred_contact_channel' => 'viber',
+            'preferred_contact_channel' => 'phone',
         ]);
 
         $profileResponse->assertRedirect(route('dashboard'));
@@ -238,7 +238,7 @@ class AuthTicketAdminTest extends TestCase
             'id' => $user->id,
             'name' => 'Updated User',
             'phone' => '+359877000999',
-            'preferred_contact_channel' => 'viber',
+            'preferred_contact_channel' => 'phone',
         ]);
 
         $ticketResponse = $this->actingAs($user)->post('/tickets', [
@@ -372,7 +372,7 @@ class AuthTicketAdminTest extends TestCase
             'name' => 'Senior Support Agent',
             'email' => 'support@example.com',
             'phone' => '+359888000000',
-            'preferred_contact_channel' => 'whatsapp',
+            'preferred_contact_channel' => 'email',
             'role' => 'admin',
             'password' => 'NewPassword123',
             'password_confirmation' => 'NewPassword123',
@@ -384,7 +384,7 @@ class AuthTicketAdminTest extends TestCase
             'name' => 'Senior Support Agent',
             'role' => 'admin',
             'phone' => '+359888000000',
-            'preferred_contact_channel' => 'whatsapp',
+            'preferred_contact_channel' => 'email',
         ]);
 
         $deleteResponse = $this->actingAs($admin)->delete("/admin/users/{$createdUser->id}");

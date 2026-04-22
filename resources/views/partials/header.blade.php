@@ -1,15 +1,14 @@
 @php($site = config('site'))
+@php($brandLogo = asset('images/branding/jar-computers-logo-blue.svg').'?v='.filemtime(public_path('images/branding/jar-computers-logo-blue.svg')))
 
 <header class="site-header">
     <div class="site-container flex min-h-16 items-center justify-between gap-4 py-3">
         <a href="{{ route('home') }}" class="brand-lockup" aria-label="{{ $site['brand'] }}">
-            <span class="brand-copy">
-                <span class="brand-title">
-                    <span class="brand-title-jar">JAR</span>
-                    <span class="brand-title-computers">Computers</span>
-                </span>
-                <span class="brand-subtitle">{{ $site['city_name'] }}</span>
-            </span>
+            <img
+                src="{{ $brandLogo }}"
+                alt="{{ $site['brand'] }}"
+                class="brand-logo-image"
+            >
         </a>
 
         <nav class="hidden items-center gap-1 lg:flex">
@@ -21,8 +20,8 @@
             @endforeach
         </nav>
 
-        <div class="hidden items-center gap-3 sm:flex">
-            <a href="tel:{{ $site['phone_href'] }}" class="btn-secondary">
+        <div class="hidden shrink-0 items-center gap-3 sm:flex">
+            <a href="tel:{{ $site['phone_href'] }}" class="btn-secondary header-phone-link">
                 {{ $site['phone'] }}
             </a>
 

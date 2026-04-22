@@ -9,6 +9,11 @@ class RepairRequest extends Model
 {
     use HasUuids;
 
+    public const CONTACT_CHANNEL_LABELS = [
+        'phone' => 'Телефон',
+        'email' => 'Имейл',
+    ];
+
     public $incrementing = false;
 
     protected $keyType = 'string';
@@ -45,5 +50,10 @@ class RepairRequest extends Model
     public function notificationDeliveries()
     {
         return $this->hasMany(NotificationDelivery::class);
+    }
+
+    public function preferredContactLabel(): string
+    {
+        return self::CONTACT_CHANNEL_LABELS[$this->preferred_contact] ?? $this->preferred_contact;
     }
 }

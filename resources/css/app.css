@@ -101,7 +101,7 @@
     }
 
     .nav-link {
-        @apply inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary;
+        @apply inline-flex items-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary;
         background: transparent;
     }
 
@@ -179,88 +179,32 @@
     }
 
     .brand-lockup {
-        @apply inline-flex min-w-0 items-center;
+        @apply inline-flex shrink-0 items-center;
     }
 
-    .brand-copy {
-        @apply flex min-w-0 flex-col justify-center leading-none;
-    }
-
-    .brand-title {
-        @apply flex min-w-0 items-end gap-1 text-foreground;
-    }
-
-    .brand-title-jar {
-        font-family: var(--font-brand-display);
-        font-size: 2.48rem;
-        line-height: 0.82;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        color: #1d4ed8;
-    }
-
-    .brand-title-computers {
-        font-family: var(--font-brand-accent);
-        font-size: 1.49rem;
-        line-height: 1;
-        font-weight: 700;
-        text-transform: lowercase;
-        color: #1d4ed8;
-    }
-
-    .brand-subtitle {
-        @apply mt-1 text-[0.69rem] uppercase tracking-[0.34em] text-slate-500;
+    .brand-logo-image {
+        display: block;
+        width: clamp(9.5rem, 16vw, 14.25rem);
+        height: auto;
     }
 
     .footer-brand-lockup {
-        @apply flex flex-col;
+        @apply inline-flex items-center;
     }
 
-    .footer-brand-title {
-        @apply flex items-end gap-1 text-white;
-    }
-
-    .footer-brand-jar {
-        font-family: var(--font-brand-display);
-        font-size: 2.5rem;
-        line-height: 0.82;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        color: #60a5fa;
-    }
-
-    .footer-brand-computers {
-        font-family: var(--font-brand-accent);
-        font-size: 1.15rem;
-        line-height: 1;
-        font-weight: 700;
-        text-transform: lowercase;
-        color: #93c5fd;
-    }
-
-    .footer-brand-city {
-        margin-top: 0.25rem;
-        font-size: 0.58rem;
-        line-height: 1;
-        letter-spacing: 0.34em;
-        text-transform: uppercase;
-        color: rgb(148 163 184);
+    .footer-brand-logo-image {
+        display: block;
+        width: min(100%, 13.5rem);
+        height: auto;
     }
 
     @media (max-width: 420px) {
-        .brand-title-jar {
-            font-size: 2.12rem;
+        .brand-logo-image {
+            width: 8.5rem;
         }
 
-        .brand-title-computers {
-            font-size: 1.3rem;
-        }
-
-        .brand-subtitle {
-            font-size: 0.62rem;
-            letter-spacing: 0.28em;
+        .footer-brand-logo-image {
+            width: min(100%, 10.75rem);
         }
     }
 
@@ -284,6 +228,10 @@
         @apply inline-flex items-center justify-center rounded-md border bg-background px-5 py-2.5 text-sm font-medium text-primary shadow-sm transition;
         border-color: rgba(37, 99, 235, 0.22);
         box-shadow: 0 10px 24px -22px rgba(37, 99, 235, 0.4);
+    }
+
+    .header-phone-link {
+        @apply shrink-0 whitespace-nowrap leading-none;
     }
 
     .btn-secondary:hover {

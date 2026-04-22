@@ -93,7 +93,7 @@ class AdminUserController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user?->id)],
             'phone' => ['nullable', 'string', 'max:40'],
-            'preferred_contact_channel' => ['required', 'in:email,phone,viber,whatsapp'],
+            'preferred_contact_channel' => ['required', 'in:email,phone'],
             'role' => ['required', 'in:user,admin'],
             'password' => [$user ? 'nullable' : 'required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()],
         ]);

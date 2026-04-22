@@ -47,7 +47,7 @@
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <h2 class="text-xl font-semibold text-foreground">Launch readiness</h2>
-                            <p class="mt-2 text-sm text-muted-foreground">Бърз operational преглед преди да вържем домейна, имейла и външните канали.</p>
+                            <p class="mt-2 text-sm text-muted-foreground">Бърз operational преглед преди да вържем домейните, имейла, базата и admin достъпа.</p>
                         </div>
                     </div>
 
@@ -70,7 +70,7 @@
                 <div class="card-soft">
                     <div class="flex items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-xl font-semibold text-foreground">Канали и инфраструктура</h2>
+                            <h2 class="text-xl font-semibold text-foreground">Домейни, имейл и инфраструктура</h2>
                             <p class="mt-2 text-sm text-muted-foreground">Тук веднага се вижда какво още липсва за публичен launch.</p>
                         </div>
                     </div>

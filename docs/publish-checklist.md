@@ -1,116 +1,88 @@
 # Publish Checklist
 
-## 1. Point the domain to the server
+## 1. Domains and redirect
 
-- Point the web root to the Laravel `public/` directory.
-- Use a production `.env` instead of the local one.
-- Set `APP_ENV=production`
-- Set `APP_DEBUG=false`
-- Set `APP_URL=https://your-domain.tld`
-- Set `PRIMARY_DOMAIN=your-domain.tld`
-- Set `CANONICAL_HOST=your-domain.tld`
-- Set `ASSET_URL=https://your-domain.tld`
-- Set `FORCE_HTTPS=true`
-- Set `TRUSTED_PROXIES` if the app is behind Nginx / Cloudflare / a load balancer.
+- Point both `jarbl.com` and `jarbl.bg` to the same hosting account and document root `public/`.
+- Use `jarbl.com` as the canonical public domain.
+- Keep `jarbl.bg` only as an alternate domain that redirects to `jarbl.com`.
+- In production `.env` set:
+  - `APP_URL=https://jarbl.com`
+  - `ASSET_URL=https://jarbl.com`
+  - `PRIMARY_DOMAIN=jarbl.com`
+  - `CANONICAL_HOST=jarbl.com`
+  - `REDIRECT_HOSTS=jarbl.bg,www.jarbl.bg,www.jarbl.com`
+  - `FORCE_HTTPS=true`
+  - `TRUSTED_PROXIES=*` if the site is behind Cloudflare or a reverse proxy
 - Set secure cookies:
   - `SESSION_SECURE_COOKIE=true`
-  - `SESSION_DOMAIN=.your-domain.tld`
+  - `SESSION_DOMAIN=.jarbl.com`
 
-## 2. Configure production email
+## 2. Mailbox and forwarding
 
-- Choose the mailbox/service that will send mail for the domain.
-- Recommended for this project: Resend over SMTP.
-- Update:
-  - `MAIL_MAILER`
-  - `MAIL_HOST`
-  - `MAIL_PORT`
-  - `MAIL_USERNAME`
-  - `MAIL_PASSWORD`
-  - `MAIL_SCHEME`
-  - `MAIL_FROM_ADDRESS`
-  - `MAIL_REPLY_TO_ADDRESS`
-  - `CONTACT_NOTIFICATION_EMAILS`
-- Add the required DNS records for the mail provider:
-  - `SPF` (`TXT`)
-  - `DKIM` (`CNAME` or `TXT`, depending on provider)
-  - `DMARC` (`TXT`)
+- Prepare the public service mailbox `office_bl@jarcomputers.com`.
+- Configure it as:
+  - public email on the site
+  - reply-to address
+  - repair request notification mailbox
+  - sender mailbox if the mail provider allows it
+- In production `.env` set:
+  - `MAIL_FROM_ADDRESS=office_bl@jarcomputers.com`
+  - `MAIL_REPLY_TO_ADDRESS=office_bl@jarcomputers.com`
+  - `CONTACT_NOTIFICATION_EMAIL=office_bl@jarcomputers.com`
+  - `CONTACT_NOTIFICATION_EMAILS=office_bl@jarcomputers.com`
+  - `SITE_PUBLIC_EMAIL=office_bl@jarcomputers.com`
+  - `SITE_SUPPORT_EMAIL=office_bl@jarcomputers.com`
+- Add the required DNS mail records for the provider you choose:
+  - `SPF`
+  - `DKIM`
+  - `DMARC`
+- If the hosting panel uses email forwarding, create the forwarder there. The codebase is prepared for the address, but the actual mailbox/forwarder must be created in hosting.
 
-## 3. Activate the messaging channels
+## 3. Database and admin access
 
-### WhatsApp
-
-- Create or connect the Meta Business / WhatsApp Cloud API app.
-- Set:
-  - `WHATSAPP_ENABLED=true`
-  - `WHATSAPP_PHONE_NUMBER_ID`
-  - `WHATSAPP_ACCESS_TOKEN`
-  - `WHATSAPP_VERIFY_TOKEN`
-  - `WHATSAPP_APP_SECRET`
-- Register webhook URL:
-  - `https://your-domain.tld/webhooks/whatsapp`
-
-### Facebook Messenger
-
-- Connect the Facebook page and Messenger app in Meta.
-- Set:
-  - `FACEBOOK_MESSENGER_ENABLED=true`
-  - `FACEBOOK_PAGE_ID`
-  - `FACEBOOK_PAGE_ACCESS_TOKEN`
-  - `FACEBOOK_VERIFY_TOKEN`
-  - `FACEBOOK_APP_SECRET`
-- Register webhook URL:
-  - `https://your-domain.tld/webhooks/facebook-messenger`
-
-### Viber
-
-- Create the Viber bot and get its production token.
-- Set:
-  - `VIBER_ENABLED=true`
-  - `VIBER_BOT_NAME`
-  - `VIBER_BOT_TOKEN`
-  - `VIBER_WEBHOOK_SECRET`
-- Register webhook URL:
-  - `https://your-domain.tld/webhooks/viber`
+- Use MySQL or PostgreSQL in production.
+- Run:
+  - `php artisan migrate --force`
+- Prepare one admin account in `.env`:
+  - `ADMIN_USER_NAME`
+  - `ADMIN_USER_EMAIL`
+  - `ADMIN_USER_PHONE`
+  - `ADMIN_USER_PASSWORD`
+- Create the admin in production with:
+  - `php artisan db:seed --class=AdminUserSeeder --force`
+- After seeding, confirm you can log in to `/admin`.
 
 ## 4. Runtime infrastructure
 
-- Use MySQL or PostgreSQL in production.
-- Set `QUEUE_CONNECTION=database` or `redis`.
+- Prefer `QUEUE_CONNECTION=database` or `redis`.
 - Run a persistent queue worker:
   - `php artisan queue:work --queue=default --tries=3 --timeout=120`
 - Monitor `failed_jobs`.
 
-## 5. Deploy and warm the app
+## 5. Build and cache
 
-- Run `php artisan migrate --force`
-- Run `php artisan config:cache`
-- Run `php artisan route:cache`
-- Run `php artisan view:cache`
-- Run `npm run build`
+- Run:
+  - `npm run build`
+  - `php artisan config:cache`
+  - `php artisan route:cache`
+  - `php artisan view:cache`
 
-## 6. Security checks before publish
-
-- Confirm demo seeders are not used in production.
-- Remove any local/test accounts from the production database.
-- Confirm login, registration, verification, and repair request throttling behave correctly.
-- Confirm HTTPS redirect and secure cookies are active.
-
-## 7. Smoke test after publish
+## 6. Final smoke test
 
 - Open `/`
 - Open `/kontakti`
+- Open `/za-nas`
 - Open `/sitemap.xml`
 - Open `/robots.txt`
 - Submit a repair request and confirm:
   - a `repair_requests` row is created
   - a `conversations` row is created
-  - email notification is sent
-- Send a test webhook message from each enabled channel and confirm:
-  - a `conversation_messages` row is created
-  - email alert is sent
+  - an email notification is sent to `office_bl@jarcomputers.com`
+- Open the site from `jarbl.bg` and confirm it redirects to `jarbl.com`
+- Log in to `/admin` and confirm the launch readiness panel shows the production setup correctly
 
-## 8. Notes
+## 7. Notes
 
-- The public site already includes privacy policy, terms, sitemap, canonical URLs, and LocalBusiness schema.
-- Review stats are stored as a snapshot in `config/reviews.php`; update them when you want to refresh the public numbers.
-- Meta and Viber can require separate business verification, page/app review, or production approval outside the codebase.
+- The public site is already prepared to work with phone and email as the primary contact methods.
+- WhatsApp, Viber, and Messenger backend hooks can still be activated later if needed, but they are no longer part of the public contact flow.
+- Review stats are stored as a snapshot in `config/reviews.php`; refresh them when you want updated public numbers.

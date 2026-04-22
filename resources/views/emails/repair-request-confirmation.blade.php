@@ -13,7 +13,7 @@
                 <div style="padding:20px;border-radius:18px;background:#eff6ff;">
                     <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#1d4ed8;">Резюме</p>
                     <p style="margin:0 0 8px;"><strong>Модел:</strong> {{ $repairRequest->model ?: 'Не е посочен' }}</p>
-                    <p style="margin:0 0 8px;"><strong>Предпочитан контакт:</strong> {{ $repairRequest->preferred_contact }}</p>
+                    <p style="margin:0 0 8px;"><strong>Предпочитан контакт:</strong> {{ $repairRequest->preferredContactLabel() }}</p>
                     <p style="margin:0;"><strong>Описание:</strong> {{ $repairRequest->issue }}</p>
                 </div>
 

@@ -2,32 +2,22 @@
 
 namespace App\Support;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Schema;
+
 class LaunchReadiness
 {
     public static function report(): array
     {
         $checks = [
             self::appUrlCheck(),
+            self::domainRedirectCheck(),
             self::httpsCheck(),
             self::databaseCheck(),
+            self::adminAccountCheck(),
             self::mailCheck(),
             self::queueCheck(),
             self::sessionCheck(),
-            self::channelCheck(
-                key: 'whatsapp',
-                label: 'WhatsApp канал',
-                requiredKeys: ['phone_number_id', 'access_token', 'verify_token'],
-            ),
-            self::channelCheck(
-                key: 'viber',
-                label: 'Viber канал',
-                requiredKeys: ['bot_token', 'webhook_secret'],
-            ),
-            self::channelCheck(
-                key: 'facebook-messenger',
-                label: 'Messenger канал',
-                requiredKeys: ['page_id', 'page_access_token', 'verify_token'],
-            ),
         ];
 
         return [
@@ -52,7 +42,7 @@ class LaunchReadiness
                 label: 'Домейн и APP_URL',
                 status: 'missing',
                 value: $appUrl ?: 'Не е зададено',
-                help: 'Сменете APP_URL с реалния домейн и попълнете PRIMARY_DOMAIN и CANONICAL_HOST.',
+                help: 'Сменете APP_URL с реалния домейн и попълнете PRIMARY_DOMAIN, CANONICAL_HOST и REDIRECT_HOSTS.',
             );
         }
 
@@ -61,7 +51,7 @@ class LaunchReadiness
                 label: 'Домейн и APP_URL',
                 status: 'warning',
                 value: $appUrl,
-                help: 'APP_URL е зададен, но PRIMARY_DOMAIN или CANONICAL_HOST още липсват.',
+                help: 'APP_URL е зададен, но PRIMARY_DOMAIN или CANONICAL_HOST още липсва.',
             );
         }
 
@@ -70,6 +60,40 @@ class LaunchReadiness
             status: 'ready',
             value: $appUrl,
             help: 'Публичният адрес и каноничният домейн са подготвени.',
+        );
+    }
+
+    private static function domainRedirectCheck(): array
+    {
+        $canonicalHost = (string) config('communications.domain.canonical_host');
+        $redirectHosts = collect(config('communications.domain.redirect_hosts', []))
+            ->filter(fn (mixed $host): bool => filled($host))
+            ->values()
+            ->all();
+
+        if (blank($canonicalHost)) {
+            return self::makeCheck(
+                label: 'Redirect между домейните',
+                status: 'missing',
+                value: 'CANONICAL_HOST липсва',
+                help: 'Задайте основния домейн, към който да сочат всички пренасочвания.',
+            );
+        }
+
+        if ($redirectHosts === []) {
+            return self::makeCheck(
+                label: 'Redirect между домейните',
+                status: 'warning',
+                value: 'Няма алтернативни домейни за redirect',
+                help: 'Ако ползвате втори домейн като jarbl.bg, добавете го в REDIRECT_HOSTS, за да се пренасочва към каноничния адрес.',
+            );
+        }
+
+        return self::makeCheck(
+            label: 'Redirect между домейните',
+            status: 'ready',
+            value: implode(', ', $redirectHosts).' → '.$canonicalHost,
+            help: 'Алтернативните домейни ще се пренасочват към основния адрес.',
         );
     }
 
@@ -112,6 +136,45 @@ class LaunchReadiness
             status: 'ready',
             value: $database,
             help: 'Избрана е сървърна база данни, подходяща за production.',
+        );
+    }
+
+    private static function adminAccountCheck(): array
+    {
+        if (! Schema::hasTable('users')) {
+            return self::makeCheck(
+                label: 'Админ достъп',
+                status: 'missing',
+                value: 'Таблицата users липсва',
+                help: 'Пуснете миграциите, преди да създавате админ профил.',
+            );
+        }
+
+        $adminCount = User::query()->where('role', 'admin')->count();
+
+        if ($adminCount > 0) {
+            return self::makeCheck(
+                label: 'Админ достъп',
+                status: 'ready',
+                value: "{$adminCount} admin профил(а)",
+                help: 'Има поне един администраторски профил за управление на сайта.',
+            );
+        }
+
+        if (filled(env('ADMIN_USER_EMAIL')) && filled(env('ADMIN_USER_PASSWORD'))) {
+            return self::makeCheck(
+                label: 'Админ достъп',
+                status: 'warning',
+                value: (string) env('ADMIN_USER_EMAIL'),
+                help: 'Admin профилът е подготвен в .env. Изпълнете db seed, за да бъде създаден в production базата.',
+            );
+        }
+
+        return self::makeCheck(
+            label: 'Админ достъп',
+            status: 'missing',
+            value: 'Няма admin профил',
+            help: 'Задайте ADMIN_USER_EMAIL и ADMIN_USER_PASSWORD и изпълнете AdminUserSeeder преди launch.',
         );
     }
 
@@ -199,41 +262,6 @@ class LaunchReadiness
             status: 'ready',
             value: 'SESSION_SECURE_COOKIE=true',
             help: 'Потребителските сесии са ограничени до сигурни HTTPS заявки.',
-        );
-    }
-
-    private static function channelCheck(string $key, string $label, array $requiredKeys): array
-    {
-        $channel = (array) config("communications.channels.{$key}", []);
-
-        if (! ($channel['enabled'] ?? false)) {
-            return self::makeCheck(
-                label: $label,
-                status: 'warning',
-                value: 'Каналът е изключен',
-                help: 'Активирайте канала и попълнете provider credentials, когато сте готови да го пуснете.',
-            );
-        }
-
-        $missingKeys = collect($requiredKeys)
-            ->filter(fn (string $requiredKey): bool => blank($channel[$requiredKey] ?? null))
-            ->values()
-            ->all();
-
-        if ($missingKeys !== []) {
-            return self::makeCheck(
-                label: $label,
-                status: 'missing',
-                value: 'Липсват: '.implode(', ', $missingKeys),
-                help: 'Каналът е включен, но provider конфигурацията още не е пълна.',
-            );
-        }
-
-        return self::makeCheck(
-            label: $label,
-            status: 'ready',
-            value: 'Каналът е активен и конфигуриран',
-            help: 'Webhook и provider настройките са попълнени.',
         );
     }
 

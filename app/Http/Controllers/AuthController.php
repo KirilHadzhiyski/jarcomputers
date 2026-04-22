@@ -88,7 +88,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:40'],
-            'preferred_contact_channel' => ['required', 'in:email,phone,viber,whatsapp'],
+            'preferred_contact_channel' => ['required', 'in:email,phone'],
             'password' => ['required', 'confirmed', PasswordRule::min(8)->letters()->mixedCase()->numbers()],
         ]);
 

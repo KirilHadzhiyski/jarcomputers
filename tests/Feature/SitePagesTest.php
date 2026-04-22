@@ -43,6 +43,17 @@ class SitePagesTest extends TestCase
             ->assertSee('Виж Google отзивите', false);
     }
 
+    public function test_contact_page_uses_the_new_public_email_and_shows_only_viber_as_chat_option(): void
+    {
+        $this->get('/kontakti')
+            ->assertOk()
+            ->assertSee('office_bl@jarcomputers.com', false)
+            ->assertSee('Viber mobile', false)
+            ->assertSee('Viber desktop', false)
+            ->assertSee('viber://chat?number=%2B359878369024', false)
+            ->assertDontSee('WhatsApp', false);
+    }
+
     public function test_about_page_mentions_company_history_and_distribution_activity(): void
     {
         $this->get('/za-nas')
@@ -83,5 +94,20 @@ class SitePagesTest extends TestCase
                 ->assertOk()
                 ->assertSee('/ceni', false);
         }
+    }
+
+    public function test_alternate_domain_redirects_to_the_canonical_production_host(): void
+    {
+        config([
+            'communications.domain.canonical_host' => 'jarbl.com',
+            'communications.domain.redirect_hosts' => ['jarbl.bg'],
+            'communications.domain.force_https' => true,
+            'communications.domain.app_url' => 'https://jarbl.com',
+        ]);
+
+        $this->call('GET', '/kontakti', ['utm_source' => 'test'], [], [], [
+            'HTTP_HOST' => 'jarbl.bg',
+            'HTTPS' => 'off',
+        ])->assertRedirect('https://jarbl.com/kontakti?utm_source=test');
     }
 }

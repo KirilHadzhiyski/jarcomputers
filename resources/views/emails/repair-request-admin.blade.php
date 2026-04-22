@@ -28,7 +28,7 @@
                     </tr>
                     <tr>
                         <td style="padding:10px 0;color:#64748b;">Предпочитан контакт</td>
-                        <td style="padding:10px 0;text-align:right;font-weight:700;">{{ $repairRequest->preferred_contact }}</td>
+                        <td style="padding:10px 0;text-align:right;font-weight:700;">{{ $repairRequest->preferredContactLabel() }}</td>
                     </tr>
                     <tr>
                         <td style="padding:10px 0;color:#64748b;">Източник</td>

@@ -36,7 +36,7 @@ class DashboardController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'string', 'max:40'],
-            'preferred_contact_channel' => ['required', 'in:email,phone,viber,whatsapp'],
+            'preferred_contact_channel' => ['required', 'in:email,phone'],
         ]);
 
         $request->user()->update($validated);

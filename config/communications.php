@@ -4,12 +4,14 @@ $appUrl = rtrim((string) env('APP_URL', 'http://localhost:8000'), '/');
 $primaryPhone = (string) env('SITE_PHONE_E164', '+359878369024');
 $phoneDigits = preg_replace('/\D+/', '', $primaryPhone);
 $facebookUsername = (string) env('FACEBOOK_PAGE_USERNAME', 'JAR.bg');
-$supportEmail = (string) env('SITE_SUPPORT_EMAIL', 'office@jarcomputers.com');
+$supportEmail = (string) env('SITE_SUPPORT_EMAIL', 'office_bl@jarcomputers.com');
+$redirectHosts = array_values(array_filter(array_map('trim', explode(',', (string) env('REDIRECT_HOSTS', '')))));
 
 return [
     'domain' => [
         'primary' => env('PRIMARY_DOMAIN'),
         'canonical_host' => env('CANONICAL_HOST'),
+        'redirect_hosts' => $redirectHosts,
         'force_https' => env('FORCE_HTTPS', false),
         'asset_url' => env('ASSET_URL'),
         'app_url' => $appUrl,
