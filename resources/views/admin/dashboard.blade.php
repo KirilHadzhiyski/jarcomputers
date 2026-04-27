@@ -32,6 +32,35 @@
             <div class="mt-8 card-soft">
                 <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
+                        <h2 class="text-xl font-semibold text-foreground">Business operations</h2>
+                        <p class="mt-2 text-sm text-muted-foreground">Orders, customers, stock, suppliers, payments, service catalog, communication templates, reviews, SEO pages, and reports.</p>
+                    </div>
+                    <a href="{{ route('admin.business.dashboard') }}" class="btn-primary">Open business cockpit</a>
+                </div>
+
+                <div class="mt-6 admin-shell-grid">
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Open orders</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $businessSummary['open_order_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Customers</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $businessSummary['customer_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Low stock</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $businessSummary['low_stock_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Unpaid amount</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ number_format((float) $businessSummary['unpaid_amount'], 2) }} BGN</p>
+                    </article>
+                </div>
+            </div>
+
+            <div class="mt-8 card-soft">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
                         <h2 class="text-xl font-semibold text-foreground">Pricing intelligence</h2>
                         <p class="mt-2 text-sm text-muted-foreground">New internal module for configurations, markets, benchmark sources, and cross-border viability analysis.</p>
                     </div>
