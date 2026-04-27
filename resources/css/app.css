@@ -469,6 +469,63 @@
         @apply rounded-xl border bg-card p-8 text-center shadow-sm;
         box-shadow: 0 16px 36px -24px rgba(37, 99, 235, 0.34);
     }
+
+    .admin-shell-grid {
+        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+    }
+
+    .admin-kpi-card {
+        @apply rounded-2xl border p-5 shadow-sm;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.88));
+        border-color: rgba(96, 165, 250, 0.26);
+    }
+
+    .admin-stat-label {
+        @apply text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground;
+    }
+
+    .admin-table-wrap {
+        @apply overflow-x-auto rounded-2xl border border-border/60 bg-background/75;
+    }
+
+    .admin-form-grid {
+        @apply grid gap-5 md:grid-cols-2;
+    }
+
+    .admin-field {
+        @apply flex flex-col gap-2;
+    }
+
+    .admin-field-span {
+        @apply md:col-span-2;
+    }
+
+    .admin-empty-state {
+        @apply rounded-2xl border border-dashed border-border/80 bg-background/70 p-8 text-center text-sm leading-6 text-muted-foreground;
+    }
+
+    .status-pill {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+    }
+
+    .status-pill-draft,
+    .status-pill-archived {
+        @apply bg-slate-500/10 text-slate-700 ring-1 ring-slate-500/20;
+    }
+
+    .status-pill-reviewed,
+    .status-pill-borderline {
+        @apply bg-amber-500/10 text-amber-700 ring-1 ring-amber-500/20;
+    }
+
+    .status-pill-approved,
+    .status-pill-viable {
+        @apply bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/20;
+    }
+
+    .status-pill-not_viable {
+        @apply bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/20;
+    }
 }
 
 @layer utilities {
