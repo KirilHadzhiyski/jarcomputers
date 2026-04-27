@@ -4,13 +4,13 @@
     <section class="page-section">
         <div class="site-container">
             <h1 class="section-heading">Admin панел</h1>
-            <p class="section-copy">Управление на потребители, поръчки и клиентски известия.</p>
+            <p class="section-copy">Управление на потребители, поръчки, клиентски известия и pricing intelligence.</p>
 
             <div class="mt-8">
                 @include('partials.admin-nav')
             </div>
 
-            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div class="admin-shell-grid">
                 <div class="card-soft">
                     <p class="text-sm text-muted-foreground">Общо поръчки</p>
                     <p class="mt-3 text-4xl font-semibold text-foreground">{{ $ticketCount }}</p>
@@ -26,6 +26,35 @@
                 <div class="card-soft">
                     <p class="text-sm text-muted-foreground">Потребители</p>
                     <p class="mt-3 text-4xl font-semibold text-foreground">{{ $userCount }}</p>
+                </div>
+            </div>
+
+            <div class="mt-8 card-soft">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-foreground">Pricing intelligence</h2>
+                        <p class="mt-2 text-sm text-muted-foreground">New internal module for configurations, markets, benchmark sources, and cross-border viability analysis.</p>
+                    </div>
+                    <a href="{{ route('admin.pricing.dashboard') }}" class="btn-primary">Open pricing module</a>
+                </div>
+
+                <div class="mt-6 admin-shell-grid">
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Configurations</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $pricingSummary['configuration_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Active markets</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $pricingSummary['active_market_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Recent benchmarks</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $pricingSummary['recent_benchmark_count'] }}</p>
+                    </article>
+                    <article class="admin-kpi-card">
+                        <p class="admin-stat-label">Viable opportunities</p>
+                        <p class="mt-3 text-3xl font-semibold text-foreground">{{ $pricingSummary['viable_count'] }}</p>
+                    </article>
                 </div>
             </div>
 
@@ -100,7 +129,7 @@
                     <a href="{{ route('admin.tickets.index') }}" class="text-sm font-medium text-primary">Всички поръчки</a>
                 </div>
 
-                <div class="mt-6 overflow-x-auto">
+                <div class="mt-6 admin-table-wrap">
                     <table class="min-w-full text-left text-sm">
                         <thead class="text-muted-foreground">
                             <tr>
@@ -113,7 +142,7 @@
                         </thead>
                         <tbody>
                             @foreach ($latestTickets as $ticket)
-                                <tr class="border-t">
+                                <tr class="border-t border-border/60">
                                     <td class="px-4 py-3">#{{ $ticket->id }}</td>
                                     <td class="px-4 py-3">{{ $ticket->user->name }}</td>
                                     <td class="px-4 py-3">{{ $ticket->subject }}</td>

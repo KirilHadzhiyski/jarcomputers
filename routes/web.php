@@ -1,6 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminPricingAnalysisController;
+use App\Http\Controllers\Admin\AdminPricingBenchmarkController;
+use App\Http\Controllers\Admin\AdminPricingConfigurationController;
+use App\Http\Controllers\Admin\AdminPricingDashboardController;
+use App\Http\Controllers\Admin\AdminPricingMarketController;
+use App\Http\Controllers\Admin\AdminPricingSourceController;
+use App\Http\Controllers\Admin\AdminPricingSyncController;
 use App\Http\Controllers\Admin\AdminTicketController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\AuthController;
@@ -50,6 +57,17 @@ Route::middleware('auth')->group(function () {
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('pricing')->name('pricing.')->group(function () {
+        Route::get('/', [AdminPricingDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('configurations', AdminPricingConfigurationController::class)->except(['show']);
+        Route::resource('markets', AdminPricingMarketController::class)->except(['show']);
+        Route::resource('sources', AdminPricingSourceController::class)->except(['show']);
+        Route::resource('benchmarks', AdminPricingBenchmarkController::class)->except(['show']);
+        Route::get('/analysis', [AdminPricingAnalysisController::class, 'index'])->name('analysis.index');
+        Route::post('/analysis/run', [AdminPricingAnalysisController::class, 'store'])->name('analysis.store');
+        Route::post('/sync', [AdminPricingSyncController::class, 'store'])->name('sync.store');
+    });
 
     Route::get('/tickets', [AdminTicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('tickets.create');
