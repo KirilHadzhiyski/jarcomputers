@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminBusinessDashboardController;
+use App\Http\Controllers\Admin\AdminBusinessReportController;
+use App\Http\Controllers\Admin\AdminBusinessResourceController;
 use App\Http\Controllers\Admin\AdminPricingAnalysisController;
 use App\Http\Controllers\Admin\AdminPricingBenchmarkController;
 use App\Http\Controllers\Admin\AdminPricingConfigurationController;
@@ -57,6 +60,17 @@ Route::middleware('auth')->group(function () {
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('business')->name('business.')->group(function () {
+        Route::get('/', [AdminBusinessDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/reports', [AdminBusinessReportController::class, 'index'])->name('reports');
+        Route::get('/{resource}', [AdminBusinessResourceController::class, 'index'])->name('index');
+        Route::get('/{resource}/create', [AdminBusinessResourceController::class, 'create'])->name('create');
+        Route::post('/{resource}', [AdminBusinessResourceController::class, 'store'])->name('store');
+        Route::get('/{resource}/{record}/edit', [AdminBusinessResourceController::class, 'edit'])->name('edit');
+        Route::put('/{resource}/{record}', [AdminBusinessResourceController::class, 'update'])->name('update');
+        Route::delete('/{resource}/{record}', [AdminBusinessResourceController::class, 'destroy'])->name('destroy');
+    });
 
     Route::prefix('pricing')->name('pricing.')->group(function () {
         Route::get('/', [AdminPricingDashboardController::class, 'index'])->name('dashboard');
