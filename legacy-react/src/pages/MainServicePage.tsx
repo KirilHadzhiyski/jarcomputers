@@ -5,7 +5,7 @@ import TrustBar from "@/components/TrustBar";
 import FAQSection from "@/components/FAQSection";
 import { CTASection } from "@/components/CTA";
 import { Button } from "@/components/ui/button";
-import { BRAND, SERVICES, MODELS, CITIES, STEPS } from "@/lib/data";
+import { BRAND, SERVICES, MODELS, CITIES, STEPS, PHONE_HREF } from "@/lib/data";
 import { Phone, ArrowRight } from "lucide-react";
 
 export default function MainServicePage() {
@@ -26,8 +26,8 @@ export default function MainServicePage() {
             Всички услуги за ремонт на iPhone на едно място. Безплатна диагностика, куриер и гаранция.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/kontakti"><Button variant="hero" size="lg">Поръчай ремонт</Button></Link>
-            <a href="tel:+359888888888"><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
+            <Link to="/zaqvka_za_remont"><Button variant="hero" size="lg">Поръчай ремонт</Button></Link>
+            <a href={`tel:${PHONE_HREF}`}><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
           </div>
         </div>
       </section>
@@ -42,7 +42,7 @@ export default function MainServicePage() {
               <Link key={service.slug} to={`/${service.slug}`} className="card-service text-center group">
                 <h3 className="font-semibold group-hover:text-primary transition-colors mb-2">{service.name}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{service.description}</p>
-                <p className="text-2xl font-bold text-primary">от {service.priceFrom} лв</p>
+                <p className="text-2xl font-bold text-primary">от {service.priceFrom} €</p>
                 <span className="inline-flex items-center gap-1 text-sm text-primary mt-3">Научи повече <ArrowRight className="h-4 w-4" /></span>
               </Link>
             ))}

@@ -14,6 +14,10 @@ import ContactPage from "./pages/ContactPage";
 import PricingPage from "./pages/PricingPage";
 import AboutPage from "./pages/AboutPage";
 import FAQPage from "./pages/FAQPage";
+import RepairRequestPage from "./pages/RepairRequestPage";
+import LegalPage from "./pages/LegalPage";
+import AdminPage from "./pages/AdminPage";
+import { generateSeoPages } from "@/lib/data";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -24,6 +28,7 @@ function ScrollToTop() {
 }
 
 const queryClient = new QueryClient();
+const seoPages = generateSeoPages();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -47,6 +52,8 @@ const App = () => (
           <Route path="/remont-iphone-12" element={<ModelPage />} />
           <Route path="/remont-iphone-13" element={<ModelPage />} />
           <Route path="/remont-iphone-14" element={<ModelPage />} />
+          <Route path="/remont-iphone-15" element={<ModelPage />} />
+          <Route path="/remont-iphone-16" element={<ModelPage />} />
           
           {/* City pages */}
           <Route path="/remont-iphone-sofia" element={<CityPage />} />
@@ -59,12 +66,19 @@ const App = () => (
           <Route path="/smqna-bateria-iphone-:series" element={<SeoPage />} />
           <Route path="/remont-face-id-iphone-:series" element={<SeoPage />} />
           <Route path="/remont-kamera-iphone-:series" element={<SeoPage />} />
+          {seoPages.map((page) => (
+            <Route key={page.slug} path={`/${page.slug}`} element={<SeoPage />} />
+          ))}
           
           {/* Info pages */}
           <Route path="/kontakti" element={<ContactPage />} />
           <Route path="/ceni" element={<PricingPage />} />
           <Route path="/za-nas" element={<AboutPage />} />
           <Route path="/chzv" element={<FAQPage />} />
+          <Route path="/zaqvka_za_remont" element={<RepairRequestPage />} />
+          <Route path="/politika-za-poveritelnost" element={<LegalPage />} />
+          <Route path="/obshti-usloviya" element={<LegalPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

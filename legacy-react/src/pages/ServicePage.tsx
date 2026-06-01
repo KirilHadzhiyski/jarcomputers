@@ -5,7 +5,7 @@ import TrustBar from "@/components/TrustBar";
 import FAQSection from "@/components/FAQSection";
 import { CTASection } from "@/components/CTA";
 import { Button } from "@/components/ui/button";
-import { BRAND, SERVICES, MODELS, CITIES, STEPS } from "@/lib/data";
+import { BRAND, SERVICES, MODELS, CITIES, STEPS, PHONE_HREF } from "@/lib/data";
 import { ArrowRight, Phone } from "lucide-react";
 
 export default function ServicePage() {
@@ -16,7 +16,7 @@ export default function ServicePage() {
   if (!service) return null;
 
   const faq = [
-    { q: `Колко струва ${service.name.toLowerCase()} на iPhone?`, a: `Цената за ${service.name.toLowerCase()} започва от ${service.priceFrom} лв. Окончателната цена зависи от модела и състоянието на устройството. Диагностиката е безплатна.` },
+    { q: `Колко струва ${service.name.toLowerCase()} на iPhone?`, a: `Цената за ${service.name.toLowerCase()} започва от ${service.priceFrom} €. Окончателната цена зависи от модела и състоянието на устройството. Диагностиката е безплатна.` },
     { q: "Колко време отнема ремонтът?", a: "Повечето ремонти се извършват в рамките на 24–48 часа след получаване на устройството." },
     { q: "Предлагате ли гаранция?", a: `Да, предлагаме гаранция до 12 месеца за ${service.name.toLowerCase()}.` },
     { q: "Как работи куриерската услуга?", a: "Изпращаме куриер до вашия адрес, за да вземе устройството. След ремонта го връщаме по същия начин – безплатно в двете посоки." },
@@ -26,7 +26,7 @@ export default function ServicePage() {
   return (
     <Layout>
       <SEOHead
-        title={`${service.name} iPhone – от ${service.priceFrom} лв | ${BRAND}`}
+        title={`${service.name} iPhone – от ${service.priceFrom} € | ${BRAND}`}
         description={`${service.description} Гаранция до 12 месеца, безплатна диагностика и куриерска услуга в цяла България от ${BRAND}.`}
       />
 
@@ -40,8 +40,8 @@ export default function ServicePage() {
             {service.description} Безплатна диагностика, куриер в двете посоки и гаранция до 12 месеца.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/kontakti"><Button variant="hero" size="lg">Поръчай ремонт</Button></Link>
-            <a href={`tel:+359888888888`}><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
+            <Link to="/zaqvka_za_remont"><Button variant="hero" size="lg">Поръчай ремонт</Button></Link>
+            <a href={`tel:${PHONE_HREF}`}><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
           </div>
         </div>
       </section>
@@ -95,7 +95,7 @@ export default function ServicePage() {
       <section className="py-16">
         <div className="container text-center">
           <h2 className="text-2xl font-bold mb-4">Цена за {service.name.toLowerCase()}</h2>
-          <p className="text-4xl font-bold text-primary mb-2">от {service.priceFrom} лв</p>
+          <p className="text-4xl font-bold text-primary mb-2">от {service.priceFrom} €</p>
           <p className="text-muted-foreground mb-8">Окончателната цена зависи от модела и диагностиката.</p>
         </div>
       </section>

@@ -9,7 +9,7 @@ interface SEOHeadProps {
 
 export default function SEOHead({ title, description, canonical }: SEOHeadProps) {
   const { pathname } = useLocation();
-  const url = canonical || `https://jarcomputers.bg${pathname}`;
+  const url = canonical || `https://jarbl.bg${pathname}`;
 
   useEffect(() => {
     document.title = title;

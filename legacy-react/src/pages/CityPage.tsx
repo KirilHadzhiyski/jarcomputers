@@ -6,7 +6,7 @@ import FAQSection from "@/components/FAQSection";
 import { CTASection } from "@/components/CTA";
 import RepairForm from "@/components/RepairForm";
 import { Button } from "@/components/ui/button";
-import { BRAND, CITIES, SERVICES, MODELS, STEPS } from "@/lib/data";
+import { BRAND, CITIES, SERVICES, MODELS, STEPS, PHONE_HREF } from "@/lib/data";
 import { Phone, ArrowRight } from "lucide-react";
 
 export default function CityPage() {
@@ -41,8 +41,8 @@ export default function CityPage() {
             Живеете в {city.name}? Изпращаме куриер до вашия адрес, ремонтираме iPhone-а ви и го връщаме – бързо, надеждно и с гаранция.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/kontakti"><Button variant="hero" size="lg">Поръчай ремонт от {city.name}</Button></Link>
-            <a href="tel:+359888888888"><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
+            <Link to="/zaqvka_za_remont"><Button variant="hero" size="lg">Поръчай ремонт от {city.name}</Button></Link>
+            <a href={`tel:${PHONE_HREF}`}><Button variant="hero-outline" size="lg" className="gap-2"><Phone className="h-5 w-5" />Обади се</Button></a>
           </div>
         </div>
       </section>
@@ -83,7 +83,7 @@ export default function CityPage() {
             {SERVICES.map((service) => (
               <Link key={service.slug} to={`/${service.slug}`} className="card-service text-center group">
                 <h3 className="font-semibold group-hover:text-primary transition-colors">{service.name}</h3>
-                <p className="text-2xl font-bold text-primary my-2">от {service.priceFrom} лв</p>
+                <p className="text-2xl font-bold text-primary my-2">от {service.priceFrom} €</p>
                 <p className="text-xs text-muted-foreground">с гаранция до 12 мес.</p>
               </Link>
             ))}

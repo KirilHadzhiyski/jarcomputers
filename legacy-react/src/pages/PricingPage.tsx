@@ -1,75 +1,87 @@
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { CTASection } from "@/components/CTA";
-import { BRAND, PRICING_TABLE, SERVICES } from "@/lib/data";
+import { BRAND, MODELS, PRICING_TABLE, SERVICES } from "@/lib/data";
 
 export default function PricingPage() {
+  const modelColumns = MODELS.filter((model) => ["11", "12", "13", "14", "15", "16"].includes(model.series)).reverse();
+
   return (
     <Layout>
       <SEOHead
         title={`Цени за ремонт на iPhone | ${BRAND}`}
-        description={`Ориентировъчни цени за ремонт на iPhone от ${BRAND}. Смяна на дисплей, батерия, Face ID, камера. Безплатна диагностика.`}
+        description={`Ориентировъчни цени в евро за ремонт на iPhone 11 до iPhone 16 от ${BRAND}. Окончателната цена се потвърждава след безплатна диагностика.`}
       />
 
       <section className="hero-section py-16">
-        <div className="container text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Цени за ремонт на iPhone</h1>
-          <p className="text-lg text-hero-muted max-w-2xl mx-auto">
-            Ориентировъчни цени. Окончателната цена зависи от диагностиката. Безплатна диагностика при всеки ремонт.
+        <div className="container max-w-4xl text-center">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">Цени за ремонт на iPhone</h1>
+          <p className="text-lg leading-8 text-hero-muted max-w-3xl mx-auto">
+            Ориентировъчни цени в евро за най-честите ремонти на iPhone 11 до iPhone 16.
+            Окончателната цена се потвърждава след безплатна диагностика.
           </p>
         </div>
       </section>
 
       <section className="py-16">
-        <div className="container max-w-4xl">
-          {/* Cards for mobile */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:hidden">
-            {SERVICES.map((service) => (
-              <div key={service.slug} className="card-service">
-                <h3 className="font-semibold mb-4">{service.name}</h3>
-                <div className="space-y-2 text-sm">
-                  {PRICING_TABLE.filter((row) => row.service === service.name).map((row) => (
-                    <div key={row.service}>
-                      <div className="flex justify-between"><span>iPhone 11</span><span className="font-semibold text-primary">{row.iphone11}</span></div>
-                      <div className="flex justify-between"><span>iPhone 12</span><span className="font-semibold text-primary">{row.iphone12}</span></div>
-                      <div className="flex justify-between"><span>iPhone 13</span><span className="font-semibold text-primary">{row.iphone13}</span></div>
-                      <div className="flex justify-between"><span>iPhone 14</span><span className="font-semibold text-primary">{row.iphone14}</span></div>
-                    </div>
-                  ))}
+        <div className="container max-w-7xl">
+          <div className="grid gap-6 lg:hidden">
+            {SERVICES.map((service) => {
+              const row = PRICING_TABLE.find((priceRow) => priceRow.service === service.name);
+
+              return (
+                <div key={service.slug} className="card-service">
+                  <h3 className="text-xl font-semibold text-foreground">{service.name}</h3>
+                  <div className="mt-5 space-y-3 text-sm">
+                    {modelColumns.map((model) => {
+                      const priceKey = `iphone${model.series}` as keyof typeof PRICING_TABLE[number];
+                      return (
+                        <div key={model.slug} className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                          <span>{model.name}</span>
+                          <span className="font-semibold text-primary">{row?.[priceKey]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Table for desktop */}
-          <div className="hidden lg:block rounded-xl border bg-card overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-muted/50">
+          <div className="hidden overflow-hidden rounded-[2rem] border bg-white shadow-[0_24px_55px_-32px_rgba(15,23,42,0.35)] lg:block">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 text-slate-700">
+                <tr>
                   <th className="px-6 py-4 text-left font-semibold">Услуга</th>
-                  <th className="px-6 py-4 text-center font-semibold">iPhone 11</th>
-                  <th className="px-6 py-4 text-center font-semibold">iPhone 12</th>
-                  <th className="px-6 py-4 text-center font-semibold">iPhone 13</th>
-                  <th className="px-6 py-4 text-center font-semibold">iPhone 14</th>
+                  {modelColumns.map((model) => (
+                    <th key={model.slug} className="px-6 py-4 text-center font-semibold">
+                      {model.name}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {PRICING_TABLE.map((row, i) => (
-                  <tr key={i} className="border-b last:border-0">
-                    <td className="px-6 py-4 font-medium">{row.service}</td>
-                    <td className="px-6 py-4 text-center text-primary font-semibold">{row.iphone11}</td>
-                    <td className="px-6 py-4 text-center text-primary font-semibold">{row.iphone12}</td>
-                    <td className="px-6 py-4 text-center text-primary font-semibold">{row.iphone13}</td>
-                    <td className="px-6 py-4 text-center text-primary font-semibold">{row.iphone14}</td>
+                {PRICING_TABLE.map((row) => (
+                  <tr key={row.service} className="border-t border-slate-100">
+                    <td className="px-6 py-4 font-semibold text-foreground">{row.service}</td>
+                    {modelColumns.map((model) => {
+                      const priceKey = `iphone${model.series}` as keyof typeof row;
+                      return (
+                        <td key={model.slug} className="px-6 py-4 text-center font-semibold text-primary">
+                          {row[priceKey]}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <div className="mt-8 card-service text-center">
-            <p className="text-sm text-muted-foreground">
-              * Цените са ориентировъчни. Окончателната цена се определя след безплатна диагностика.
+          <div className="card-soft mt-8 text-center text-sm leading-7 text-muted-foreground">
+            <p>
+              * Цените са ориентировъчни и са изписани в евро.
+              <br />Окончателната цена се определя след безплатна диагностика.
               <br />Всички ремонти идват с гаранция до 12 месеца.
               <br />-10% отстъпка при онлайн поръчка.
             </p>
