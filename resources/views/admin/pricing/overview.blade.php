@@ -1,4 +1,4 @@
-@extends('layouts.site')
+@extends('layouts.admin')
 
 @section('content')
     <section class="page-section">
@@ -73,46 +73,13 @@
                 </div>
 
                 <div class="card-soft">
-                    <h2 class="text-xl font-semibold text-foreground">Manual sync trigger</h2>
-                    <p class="mt-2 text-sm text-muted-foreground">This stores deterministic sample benchmark data as scraper input, so the admin flow is ready before live crawlers are connected.</p>
-
-                    @if ($configurations->isEmpty() || $markets->isEmpty() || $sources->isEmpty())
-                        <div class="admin-empty-state mt-6">
-                            Add at least one configuration, market, and source before running a sync.
-                        </div>
-                    @else
-                        <form method="POST" action="{{ route('admin.pricing.sync.store') }}" class="mt-6 space-y-5">
-                            @csrf
-                            <div class="admin-field">
-                                <label for="sync-pricing-configuration-id" class="text-sm font-medium text-foreground">Configuration</label>
-                                <select id="sync-pricing-configuration-id" name="pricing_configuration_id" class="input-shell">
-                                    @foreach ($configurations as $configuration)
-                                        <option value="{{ $configuration->id }}">{{ $configuration->name }} ({{ $configuration->sku }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="admin-field">
-                                <label for="sync-pricing-market-id" class="text-sm font-medium text-foreground">Market</label>
-                                <select id="sync-pricing-market-id" name="pricing_market_id" class="input-shell">
-                                    @foreach ($markets as $market)
-                                        <option value="{{ $market->id }}">{{ $market->name }} ({{ $market->currency_code }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="admin-field">
-                                <label for="sync-pricing-source-id" class="text-sm font-medium text-foreground">Source</label>
-                                <select id="sync-pricing-source-id" name="pricing_source_id" class="input-shell">
-                                    @foreach ($sources as $source)
-                                        <option value="{{ $source->id }}">{{ $source->name }} / {{ $source->market?->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn-primary w-full">Run sample sync</button>
-                        </form>
-                    @endif
+                    <h2 class="text-xl font-semibold text-foreground">Автоматично получаване на цени</h2>
+                    <p class="mt-2 text-sm text-muted-foreground">Получавайте реални оферти от свързан източник. Анализът се обновява след успешен импорт и използва актуални данни в съответната валута.</p>
+                    <a href="{{ route('admin.integrations.index') }}#integration-price_feed" class="btn-secondary-dark mt-5">Настройки на ценовия източник</a>
+                    <form method="POST" action="{{ route('admin.pricing.sync.store') }}" class="mt-5">
+                        @csrf
+                        <button type="submit" class="btn-primary">Обнови реалните оферти</button>
+                    </form>
                 </div>
             </div>
 

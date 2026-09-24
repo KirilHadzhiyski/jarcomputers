@@ -5,6 +5,9 @@ namespace App\Services\Communications;
 use App\Models\Conversation;
 use App\Models\ConversationMessage;
 use App\Models\RepairRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ConversationService
 {
@@ -52,6 +55,21 @@ class ConversationService
 
     public function storeInboundMessage(string $channel, array $normalized, array $payload): ConversationMessage
     {
+        $key = hash('sha256', $channel.':'.($normalized['external_conversation_id'] ?? ''));
+
+        return Cache::lock('inbound:'.$key, 30)->block(10,
+            fn () => DB::transaction(fn () => $this->persistInboundMessage($channel, $normalized, $payload)));
+    }
+
+    private function persistInboundMessage(string $channel, array $normalized, array $payload): ConversationMessage
+    {
+        $providerId = $normalized['provider_message_id'] ?? null;
+        if (filled($providerId)) {
+            $existing = ConversationMessage::where('channel', $channel)->where('provider_message_id', $providerId)->first();
+            if ($existing) {
+                return $existing;
+            }
+        }
         $repairRequest = $this->findMatchingRepairRequest($normalized);
         $timestamp = $normalized['received_at'] ?? now();
 
@@ -74,16 +92,18 @@ class ConversationService
 
         $conversation->forceFill([
             'repair_request_id' => $conversation->repair_request_id ?: $repairRequest?->id,
-            'customer_name' => $normalized['customer_name'] ?: $conversation->customer_name,
-            'customer_phone' => $normalized['customer_phone'] ?: $conversation->customer_phone,
-            'customer_email' => $normalized['customer_email'] ?: $conversation->customer_email,
-            'external_user_id' => $normalized['external_user_id'] ?: $conversation->external_user_id,
-            'last_message_at' => $timestamp,
+            'customer_name' => ($normalized['customer_name'] ?? null) ?: $conversation->customer_name,
+            'customer_phone' => ($normalized['customer_phone'] ?? null) ?: $conversation->customer_phone,
+            'customer_email' => ($normalized['customer_email'] ?? null) ?: $conversation->customer_email,
+            'external_user_id' => ($normalized['external_user_id'] ?? null) ?: $conversation->external_user_id,
+            'last_message_at' => $conversation->last_message_at && $conversation->last_message_at->gt($timestamp) ? $conversation->last_message_at : $timestamp,
             'status' => 'open',
             'meta' => array_filter(array_merge($conversation->meta ?? [], $normalized['meta'] ?? [])),
         ])->save();
 
-        return $conversation->messages()->create([
+        return $conversation->messages()->firstOrCreate([
+            'dedupe_key' => filled($providerId) ? hash('sha256', $channel.':'.$providerId) : (string) Str::uuid(),
+        ], [
             'repair_request_id' => $conversation->repair_request_id,
             'channel' => $channel,
             'direction' => 'inbound',

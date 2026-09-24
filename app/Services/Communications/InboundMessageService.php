@@ -17,8 +17,7 @@ class InboundMessageService
     public function __construct(
         private readonly ConversationService $conversationService,
         private readonly WebhookSignatureValidator $signatureValidator,
-    ) {
-    }
+    ) {}
 
     public function verify(string $channel, Request $request): Response
     {
@@ -54,7 +53,9 @@ class InboundMessageService
 
         return $messages->map(function (array $message) use ($channel, $payload) {
             $stored = $this->conversationService->storeInboundMessage($channel, $message, $payload);
-            DispatchInboundMessageNotification::dispatch($stored->id);
+            if ($stored->wasRecentlyCreated) {
+                DispatchInboundMessageNotification::dispatch($stored->id);
+            }
 
             return $stored;
         });
@@ -160,7 +161,7 @@ class InboundMessageService
     private function assertSupportedChannel(string $channel): void
     {
         if (! in_array($channel, ['whatsapp', 'facebook-messenger', 'viber'], true)) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
     }
 }

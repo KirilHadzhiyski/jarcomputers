@@ -139,37 +139,13 @@ class AdminPricingCrudTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_run_sample_sync_endpoint(): void
+    public function test_sync_without_credentials_does_not_fabricate_benchmarks(): void
     {
-        $admin = User::factory()->create([
-            'role' => 'admin',
-        ]);
-        $configuration = PricingConfiguration::factory()->create([
-            'base_price_bgn' => 1200,
-        ]);
-        $market = PricingMarket::factory()->create([
-            'code' => 'GR',
-            'currency_code' => 'EUR',
-            'vat_rate' => 24,
-            'exchange_rate_to_bgn' => 1.9558,
-        ]);
-        $source = PricingSource::factory()->create([
-            'pricing_market_id' => $market->id,
-            'source_key' => 'skroutz-gr',
-        ]);
-
-        $response = $this->actingAs($admin)->post('/admin/pricing/sync', [
-            'pricing_configuration_id' => $configuration->id,
-            'pricing_market_id' => $market->id,
-            'pricing_source_id' => $source->id,
-        ]);
-
-        $response->assertRedirect(route('admin.pricing.dashboard'));
-        $this->assertDatabaseHas('pricing_benchmarks', [
-            'pricing_configuration_id' => $configuration->id,
-            'pricing_market_id' => $market->id,
-            'pricing_source_id' => $source->id,
-            'input_method' => 'scraper',
-        ]);
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin)->post('/admin/pricing/sync')
+            ->assertRedirect(route('admin.integrations.index'))
+            ->assertSessionHasErrors('integration');
+        $this->assertDatabaseCount('pricing_benchmarks', 0);
+        $this->assertDatabaseCount('integration_runs', 0);
     }
 }

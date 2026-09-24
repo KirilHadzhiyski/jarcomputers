@@ -1,4 +1,4 @@
-@extends('layouts.site')
+@extends('layouts.admin')
 
 @php
     $isEditing = filled($record?->id);

@@ -1,4 +1,4 @@
-@extends('layouts.site')
+@extends('layouts.admin')
 
 @php
     $tableFields = collect($definition['fields'])->filter(fn ($field) => $field['table'])->values();

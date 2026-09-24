@@ -14,6 +14,7 @@ class CustomerReview extends Model
     ];
 
     protected $fillable = [
+        'external_id',
         'customer_name',
         'source',
         'rating',

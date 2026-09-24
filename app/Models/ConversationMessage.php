@@ -14,6 +14,7 @@ class ConversationMessage extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'dedupe_key',
         'conversation_id',
         'repair_request_id',
         'channel',

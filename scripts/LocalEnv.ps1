@@ -236,10 +236,15 @@ function Ensure-NodeDependencies {
     if (-not (Test-Path -LiteralPath 'node_modules')) {
         & (Get-NpmExe) install --no-fund --no-audit
     }
+    if (-not (Test-Path -LiteralPath 'legacy-react\node_modules')) {
+        & (Get-NpmExe) --prefix legacy-react ci --no-fund --no-audit
+        if ($LASTEXITCODE -ne 0) { throw 'Admin frontend dependency installation failed.' }
+    }
 }
 
 function Ensure-BuildAssets {
-    if (-not (Test-Path -LiteralPath 'public\build\manifest.json')) {
+    if (-not (Test-Path -LiteralPath 'public\build\manifest.json') -or -not (Test-Path -LiteralPath 'public\admin-build\manifest.json')) {
         & (Get-NpmExe) run build
+        if ($LASTEXITCODE -ne 0) { throw 'Frontend build failed.' }
     }
 }

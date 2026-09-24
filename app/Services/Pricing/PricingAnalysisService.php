@@ -15,6 +15,10 @@ class PricingAnalysisService
             ->where('pricing_configuration_id', $configuration->id)
             ->where('pricing_market_id', $market->id)
             ->where('is_active', true)
+            ->where('collected_at', '<=', now())
+            ->where('currency_code', $market->currency_code)
+            ->where('collected_at', '>=', now()->subDays(config('integrations.benchmark_max_age_days', 7)))
+            ->where(fn ($query) => $query->whereNull('availability_text')->orWhere('availability_text', '!=', 'Synced sample benchmark'))
             ->orderByDesc('collected_at')
             ->get();
 

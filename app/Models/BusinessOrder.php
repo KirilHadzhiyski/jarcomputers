@@ -32,6 +32,8 @@ class BusinessOrder extends Model
     ];
 
     protected $fillable = [
+        'intake_reference',
+        'repair_request_id',
         'user_id',
         'customer_profile_id',
         'ticket_id',

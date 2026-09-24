@@ -12,11 +12,13 @@ class PricingBenchmark extends Model
     use HasFactory;
 
     public const INPUT_METHOD_LABELS = [
+        'api' => 'API',
         'manual' => 'Ръчно',
         'scraper' => 'Scraper',
     ];
 
     protected $fillable = [
+        'external_id',
         'pricing_configuration_id',
         'pricing_market_id',
         'pricing_source_id',

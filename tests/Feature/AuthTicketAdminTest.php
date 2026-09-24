@@ -283,7 +283,7 @@ class AuthTicketAdminTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get('/admin')
+            ->get('/admin/operations')
             ->assertOk()
             ->assertSee('Launch readiness')
             ->assertSee('Домейн и APP_URL')

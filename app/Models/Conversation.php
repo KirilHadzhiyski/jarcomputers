@@ -14,6 +14,7 @@ class Conversation extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'read_at',
         'repair_request_id',
         'channel',
         'customer_name',
@@ -30,6 +31,7 @@ class Conversation extends Model
     {
         return [
             'last_message_at' => 'datetime',
+            'read_at' => 'datetime',
             'meta' => 'array',
         ];
     }

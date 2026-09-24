@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Conversation;
+use App\Models\RepairRequest;
+use App\Models\Ticket;
+use App\Services\Business\BusinessIntakeService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RepairRequest::created(fn ($request) => app(BusinessIntakeService::class)->repairRequest($request));
+        Ticket::saved(fn ($ticket) => app(BusinessIntakeService::class)->ticket($ticket));
+        Conversation::saved(fn ($conversation) => app(BusinessIntakeService::class)->conversation($conversation));
+
         RateLimiter::for('auth-login', function (Request $request): array {
             return [
                 Limit::perMinute(5)->by(strtolower((string) $request->input('email')).'|'.$request->ip()),

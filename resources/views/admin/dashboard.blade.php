@@ -1,4 +1,4 @@
-@extends('layouts.site')
+@extends('layouts.admin')
 
 @section('content')
     <section class="page-section">
@@ -11,6 +11,8 @@
             </div>
 
             <div class="admin-shell-grid">
+                <a href="{{ route('admin.integrations.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Автоматични данни</h2><p class="mt-3 text-sm text-muted-foreground">Свързани източници, настройки и история на обновяванията.</p></a>
+                <a href="{{ route('admin.inbox.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Входящи заявки</h2><p class="mt-3 text-sm text-muted-foreground">Получени заявки за ремонт и разговори с клиенти.</p></a>
                 <div class="card-soft">
                     <p class="text-sm text-muted-foreground">Общо поръчки</p>
                     <p class="mt-3 text-4xl font-semibold text-foreground">{{ $ticketCount }}</p>

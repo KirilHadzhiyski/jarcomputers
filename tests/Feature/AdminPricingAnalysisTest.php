@@ -44,6 +44,7 @@ class AdminPricingAnalysisTest extends TestCase
             'price_includes_vat' => true,
             'price_excluding_vat' => 580.65,
             'price_including_vat' => 720,
+            'collected_at' => now(),
             'input_method' => 'manual',
             'is_active' => true,
         ]);
@@ -57,6 +58,7 @@ class AdminPricingAnalysisTest extends TestCase
             'price_includes_vat' => true,
             'price_excluding_vat' => 629.03,
             'price_including_vat' => 780,
+            'collected_at' => now(),
             'input_method' => 'manual',
             'is_active' => true,
         ]);

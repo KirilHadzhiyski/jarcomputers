@@ -2,9 +2,11 @@
 
 This file describes the minimum production setup for this Laravel project.
 
+For the prepared cPanel package for jarbl.bg, follow [the cPanel upload guide](cpanel-upload.md), including its split directory layout and 15-minute Cron configuration.
+
 ## 1. Environment file
 
-- Start from [`.env.production.example`](/C:/Users/PC/Desktop/New%20folder%20(7)/project/.env.production.example)
+- Start from [`.env.production.example`](../.env.production.example)
 - Do not reuse the local `.env`
 - Set a real `APP_KEY`
 - Set `APP_ENV=production`

@@ -26,6 +26,9 @@
 /database/database.sqlite
 /node_modules
 /public/build
+/public/admin-build
+/dist/
+/jar-computers-cpanel-static-*.zip
 /public/hot
 /public/storage
 /bootstrap/cache/*.php

@@ -9,6 +9,12 @@ class RepairRequest extends Model
 {
     use HasUuids;
 
+    public const STATUS_LABELS = [
+        'pending' => 'Нова заявка', 'contacted' => 'Свързано с клиента', 'courier_sent' => 'Изпратен куриер',
+        'received' => 'Устройството е получено', 'diagnosing' => 'В диагностика', 'awaiting_approval' => 'Очаква одобрение',
+        'repairing' => 'В ремонт', 'completed' => 'Готово', 'returned' => 'Върнато на клиента', 'cancelled' => 'Отказано',
+    ];
+
     public const CONTACT_CHANNEL_LABELS = [
         'phone' => 'Телефон',
         'email' => 'Имейл',

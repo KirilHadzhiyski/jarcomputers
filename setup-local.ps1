@@ -11,6 +11,9 @@ Write-Host 'Installing PHP dependencies...' -ForegroundColor Cyan
 
 Write-Host 'Installing Node dependencies...' -ForegroundColor Cyan
 & (Get-NpmExe) install --no-fund --no-audit
+if ($LASTEXITCODE -ne 0) { throw 'Frontend dependency installation failed.' }
+& (Get-NpmExe) --prefix legacy-react ci --no-fund --no-audit
+if ($LASTEXITCODE -ne 0) { throw 'Admin dependency installation failed.' }
 
 Write-Host 'Preparing Laravel environment...' -ForegroundColor Cyan
 Ensure-AppKey

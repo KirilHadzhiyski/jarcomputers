@@ -19,6 +19,7 @@ class PricingConfiguration extends Model
     ];
 
     protected $fillable = [
+        'cross_border_data',
         'name',
         'sku',
         'base_price_bgn',
@@ -34,6 +35,7 @@ class PricingConfiguration extends Model
     {
         return [
             'base_price_bgn' => 'decimal:2',
+            'cross_border_data' => 'array',
         ];
     }
 
@@ -45,6 +47,11 @@ class PricingConfiguration extends Model
     public function benchmarks()
     {
         return $this->hasMany(PricingBenchmark::class)->latest('collected_at');
+    }
+
+    public function skroutzListing()
+    {
+        return $this->hasOne(SkroutzListing::class);
     }
 
     public function analysisResults()

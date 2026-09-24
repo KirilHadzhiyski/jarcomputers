@@ -1,8 +1,12 @@
 # Laravel + Vue Rewrite
 
+For cPanel, use the Bulgarian [upload guide](docs/cpanel-upload.md). Run `build-cpanel.cmd` to create a production ZIP with separate `jar-app` and `public_html` folders, compiled assets, dependencies, and bounded Cron workers.
+
 This project was rewritten from the original React/Vite app into Laravel + Vue.
 
-The original app is preserved in `legacy-react/`.
+The original app is preserved in `legacy-react/`. The `/admin` workspace now reuses its React interface, backed by authenticated Laravel endpoints and database storage.
+
+The Bulgarian [admin automation guide](docs/admin-automation.md) covers JAR, mailbox imports, ECB rates, authorized price feeds, Google reviews, and preparation for a later Skroutz account connection. Open `/admin/integrations` for connection settings and `/admin/skroutz` for catalog readiness. Start the local workers with `run-automation.cmd`.
 
 ## First-time setup
 

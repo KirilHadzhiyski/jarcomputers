@@ -3,8 +3,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "build": "vite build && npm run build:admin",
+        "dev": "vite",
+        "build:admin": "npm --prefix legacy-react run build:admin"
     },
     "dependencies": {
         "@vueuse/core": "^14.2.1",
