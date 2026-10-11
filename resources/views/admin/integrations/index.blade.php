@@ -51,6 +51,10 @@
                         @elseif ($key === 'currency')
                             <select id="{{ $provider }}-setting-{{ $key }}" name="settings[{{ $key }}]" class="input-shell"><option value="">Изберете потвърдена валута</option>
                             @foreach (['EUR','BGN','USD','GBP','RON','PLN','CZK','HUF'] as $currency)<option value="{{ $currency }}" @selected(($connection?->settings[$key] ?? '') === $currency)>{{ $currency }}</option>@endforeach</select>
+                        @elseif ($key === 'products_mode')
+                            <select id="{{ $provider }}-setting-{{ $key }}" name="settings[{{ $key }}]" class="input-shell">
+                                @foreach (['off'=>'Изключено — само поръчки','validation'=>'Валидация — без промени в Skroutz','live'=>'Публикуване — цени и наличности'] as $value=>$optionLabel)<option value="{{ $value }}" @selected(($connection?->settings[$key] ?? 'off') === $value)>{{ $optionLabel }}</option>@endforeach
+                            </select>
                         @else
                             <input id="{{ $provider }}-setting-{{ $key }}" name="settings[{{ $key }}]" type="{{ $key === 'url' ? 'url' : 'text' }}" value="{{ $connection?->settings[$key] ?? '' }}" class="input-shell">
                         @endif</div>

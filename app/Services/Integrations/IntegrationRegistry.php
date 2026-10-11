@@ -11,10 +11,13 @@ class IntegrationRegistry
         $definitions = [
             'skroutz' => [
                 'name' => 'Skroutz Marketplace', 'interval' => 15,
-                'description' => 'Получаване на поръчки чрез webhook и проверка през вашия търговски акаунт. Подготовката на продуктовия каталог е в раздел Skroutz.',
+                'description' => 'Получаване на поръчки чрез webhook и отделно валидиране или обновяване на цени и наличности през Products API.',
                 'docs' => 'https://developer.skroutz.gr/smart_cart/orders_api/',
-                'credentials' => ['token' => 'Skroutz Merchants API token'], 'settings' => [],
-                'help' => 'Token от Merchants → Services → Skroutz Marketplace. При включване: новите поръчки идват по webhook; известните поръчки от последните 30 дни се обновяват на 15 минути. Няма автоматично приемане, отказване или изпращане на цени.',
+                'credentials' => ['token' => 'Orders API token', 'products_token' => 'Products API token'],
+                'optional_credentials' => ['products_token'],
+                'settings' => ['products_mode' => 'Автоматизация на продуктовите данни'],
+                'optional_settings' => ['products_mode'],
+                'help' => 'Orders token: Merchants → Services → Skroutz Marketplace. Products token: Merchants → Products → Feed Updates. Режим „Валидация“ проверява партидата без промяна; „Публикуване“ изпраща цена, наличност и активност. Поръчки не се приемат или отказват автоматично.',
             ],
             'mailbox' => [
                 'name' => 'Служебна поща', 'interval' => 5,
@@ -79,11 +82,15 @@ class IntegrationRegistry
             }
         }
         foreach ($definition['settings'] as $key => $label) {
-            if (blank(($connection->settings ?? [])[$key] ?? null)) {
+            if (! in_array($key, $definition['optional_settings'] ?? [], true) && blank(($connection->settings ?? [])[$key] ?? null)) {
                 $missing[] = $label;
             }
         }
+        if ($connection->provider === 'skroutz' && in_array(($connection->settings ?? [])['products_mode'] ?? 'off', ['validation', 'live'], true)
+            && blank(($connection->credentials ?? [])['products_token'] ?? null)) {
+            $missing[] = 'Products API token';
+        }
 
-        return $missing;
+        return array_values(array_unique($missing));
     }
 }

@@ -17,7 +17,14 @@ class SkroutzCatalog
         'availability' => 'Срок за доставка', 'weight' => 'Тегло в грамове',
     ];
 
-    public const AVAILABILITY = ['Available', 'Delivery 1 to 3 days', 'Delivery 4 to 10 days', 'Delivery 10 to 30 days'];
+    public const AVAILABILITY = ['In stock', 'Available from 1 to 3 days', 'Available from 4 to 6 days', 'Available up to 12 days'];
+
+    private const LEGACY_AVAILABILITY = [
+        'Available' => 'In stock',
+        'Delivery 1 to 3 days' => 'Available from 1 to 3 days',
+        'Delivery 4 to 10 days' => 'Available from 4 to 6 days',
+        'Delivery 10 to 30 days' => 'Available up to 12 days',
+    ];
 
     public function rules(bool $complete = true): array
     {
@@ -29,7 +36,7 @@ class SkroutzCatalog
             'mpn' => "$required|string|max:80", 'ean' => [$required, 'regex:/^([0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})$/'],
             'description' => "$required|string|max:10000", 'price_with_vat' => "$required|numeric|gt:0|max:9999999|decimal:0,2",
             'vat' => "$required|numeric|min:0|max:30", 'quantity' => "$required|integer|min:0|max:1000000",
-            'availability' => [$required, Rule::in(self::AVAILABILITY)],
+            'availability' => [$required, Rule::in([...self::AVAILABILITY, ...array_keys(self::LEGACY_AVAILABILITY)])],
             'weight' => 'nullable|numeric|gt:0|max:1000000',
         ];
     }
@@ -87,15 +94,28 @@ class SkroutzCatalog
         $products = $root->appendChild($xml->createElement('products'));
         foreach ($this->ready() as $configuration) {
             $data = $configuration->skroutzListing->attributes;
-            if ((int) $data['quantity'] === 0) {
-                continue;
-            }
             $product = $products->appendChild($xml->createElement('product'));
-            foreach (['id' => $configuration->sku, 'name' => $configuration->name, ...$data] as $key => $value) {
-                if (! in_array($key, ['id', 'name', ...array_keys(self::FIELDS)], true) || $value === null || $value === '') {
+            $attributes = [
+                'uid' => $configuration->sku,
+                'name' => $configuration->name,
+                'link' => $data['link'],
+                'image' => $data['image'],
+                'category' => $data['category'],
+                'price' => $data['price_with_vat'],
+                'vat' => $data['vat'],
+                'availability' => self::LEGACY_AVAILABILITY[$data['availability']] ?? $data['availability'],
+                'manufacturer' => $data['manufacturer'],
+                'mpn' => $data['mpn'],
+                'ean' => $data['ean'],
+                'description' => $data['description'],
+                'quantity' => $data['quantity'],
+                'weight' => $data['weight'] ?? null,
+            ];
+            foreach ($attributes as $key => $value) {
+                if ($value === null || $value === '') {
                     continue;
                 }
-                if (in_array($key, ['price_with_vat', 'vat'])) {
+                if (in_array($key, ['price', 'vat'], true)) {
                     $value = number_format((float) $value, 2, '.', '');
                 }
                 $product->appendChild($xml->createElement($key))->appendChild($xml->createTextNode(strip_tags((string) $value)));

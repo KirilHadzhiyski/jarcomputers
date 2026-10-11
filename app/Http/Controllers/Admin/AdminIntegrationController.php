@@ -43,6 +43,7 @@ class AdminIntegrationController extends Controller
             $rules['settings.'.$key] = match ($key) {
                 'currency' => 'nullable|in:EUR,BGN,USD,GBP,RON,PLN,CZK,HUF',
                 'service' => 'nullable|in:gmail,microsoft',
+                'products_mode' => 'nullable|in:off,validation,live',
                 'mailbox' => 'nullable|email|max:255',
                 'url' => 'nullable|url:https|max:2000',
                 'account_id', 'location_id' => 'nullable|regex:/^[0-9]+$/|max:80',
