@@ -1,12 +1,12 @@
 # Качване на JAR Computers в cPanel
 
-Подготвен пакет: Laravel + оригиналния React админ + автоматизации + подготовка за Skroutz. Създаден на 23.09.2026 г. Това е PHP приложение с база данни; старият статичен ZIP не може да изпълнява импортите.
+Подготвен пакет: Laravel + оригиналния React админ + автоматизации + подготовка за Skroutz. Актуализиран на 14.10.2026 г. за реалния addon document root на `jarbl.bg`. Това е PHP приложение с база данни; старият статичен ZIP не може да изпълнява импортите.
 
 ## 1. Какво има в архива
 
 ```text
 jar-app/                  частно приложение, vendor/, миграции и примерен .env
-public_html/              публични файлове, index.php, .htaccess, build/, admin-build/
+public_html/              съдържание за public_html/jarbl.bg, index.php, .htaccess, build/, admin-build/
 UPLOAD-CPANEL.md           тези инструкции
 ADMIN-AUTOMATION.md        поведение и API настройки
 RELEASE.json               информация за изданието
@@ -32,17 +32,17 @@ SuperHosting посочва PHP 8.4 в [PHP Manager](https://help.superhosting.b
 
 ```text
 /home/CPANEL_USER/jar-app/
-/home/CPANEL_USER/public_html/
+/home/CPANEL_USER/public_html/jarbl.bg/
 ```
 
-Качете и разархивирайте първо в отделна временна папка **извън public_html**. Поставете `jar-app` в home директорията. След настройването на приложението прехвърлете съдържанието на пакетираната `public_html` в реалната публична папка на домейна, включително скрития `.htaccess`. Не качвайте цялото приложение вътре в `public_html`.
+Качете и разархивирайте първо в отделна временна папка **извън public_html**. Поставете `jar-app` в home директорията като `/home/CPANEL_USER/jar-app`. След настройването на приложението прехвърлете **съдържанието** на пакетираната `public_html` в `/home/CPANEL_USER/public_html/jarbl.bg`, включително скрития `.htaccess`. Не качвайте цялото приложение вътре в публичната папка.
 
-За главен домейн cPanel обикновено не позволява промяна на document root — затова архивът вече използва разделени папки. [Официална документация](https://docs.cpanel.net/cpanel/domains/domains/manage-the-domain/)
+Архивът е настроен за потвърдения в cPanel document root на addon домейна `jarbl.bg`. [Официална документация](https://docs.cpanel.net/cpanel/domains/domains/manage-the-domain/)
 
-Ако document root на `jarbl.bg` е друга папка, променете **двата пътя**:
+Ако document root на `jarbl.bg` бъде променен, променете **двата пътя**:
 
-1. `index.php` в публичната папка: `$appRoot` трябва да сочи към абсолютния частен път, например `/home/CPANEL_USER/jar-app`.
-2. `jar-app/public-path.php`: върнете абсолютния път до реалната публична папка на този домейн.
+1. `index.php` в публичната папка: `$appRoot` трябва да сочи към абсолютния частен път `/home/CPANEL_USER/jar-app`.
+2. `jar-app/public-path.php`: върнете абсолютния път до реалната публична папка на този домейн. Променливата `JAR_PUBLIC_PATH` е само за build проверката и не трябва да се добавя в production `.env`.
 
 Пакетираният `.htaccess` задава `DirectoryIndex index.php`, така че старият React `index.html` да не се показва вместо Laravel. Запазете резервно копие на старата `.htaccess`; ако хостингът е добавил PHP handler блок, възстановете подходящия блок чрез PHP Manager.
 
@@ -60,10 +60,10 @@ SuperHosting посочва PHP 8.4 в [PHP Manager](https://help.superhosting.b
 
 ```sh
 cd /home/CPANEL_USER/jar-app
-/opt/cpanel/ea-php84/root/usr/bin/php -v
-/opt/cpanel/ea-php84/root/usr/bin/php artisan key:generate --force
-/opt/cpanel/ea-php84/root/usr/bin/php artisan migrate --force
-/opt/cpanel/ea-php84/root/usr/bin/php artisan db:seed --class=AdminUserSeeder --force
+/opt/cpanel/ea-php85/root/usr/bin/php -v
+/opt/cpanel/ea-php85/root/usr/bin/php artisan key:generate --force
+/opt/cpanel/ea-php85/root/usr/bin/php artisan migrate --force
+/opt/cpanel/ea-php85/root/usr/bin/php artisan db:seed --class=AdminUserSeeder --force
 ```
 
 Тези стъпки са за **първа инсталация**. При обновяване запазете съществуващите `.env`, APP_KEY, база и `storage`; не изпълнявайте `key:generate` или AdminUserSeeder отново. Нов APP_KEY прави старите криптирани интеграционни ключове нечетими. Никога не използвайте `migrate:fresh`, общия демонстрационен seeder или локалния акаунт `admin@jar.local` на продукция.
@@ -71,10 +71,10 @@ cd /home/CPANEL_USER/jar-app
 След създаване на администратора изтрийте стойността на `ADMIN_USER_PASSWORD` от `.env`. При липса на Terminal/SSH предоставете тези CLI команди на поддръжката на хостинга. Няма публичен уеб инсталатор, който да създава администратори или да изпълнява миграции.
 
 ```sh
-/opt/cpanel/ea-php84/root/usr/bin/php artisan config:cache
-/opt/cpanel/ea-php84/root/usr/bin/php artisan route:cache
-/opt/cpanel/ea-php84/root/usr/bin/php artisan view:cache
-/opt/cpanel/ea-php84/root/usr/bin/php cpanel-preflight.php --database
+/opt/cpanel/ea-php85/root/usr/bin/php artisan config:cache
+/opt/cpanel/ea-php85/root/usr/bin/php artisan route:cache
+/opt/cpanel/ea-php85/root/usr/bin/php artisan view:cache
+/opt/cpanel/ea-php85/root/usr/bin/php cpanel-preflight.php --database
 ```
 
 Папките `storage/` и `bootstrap/cache/` трябва да са записваеми от PHP под потребителя на акаунта. Обичайно директории 0755 и файлове 0644 са достатъчни; за `.env` използвайте 0600 при PHP под същия потребител. Не задавайте 0777.
@@ -92,9 +92,9 @@ cd /home/CPANEL_USER/jar-app
 Командите, съответно:
 
 ```sh
-/opt/cpanel/ea-php84/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php schedule >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-schedule.log 2>&1
-/opt/cpanel/ea-php84/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php integrations >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-integrations.log 2>&1
-/opt/cpanel/ea-php84/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php notifications >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-notifications.log 2>&1
+/opt/cpanel/ea-php85/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php schedule >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-schedule.log 2>&1
+/opt/cpanel/ea-php85/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php integrations >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-integrations.log 2>&1
+/opt/cpanel/ea-php85/root/usr/bin/php /home/CPANEL_USER/jar-app/cpanel-cron.php notifications >> /home/CPANEL_USER/jar-app/storage/logs/cpanel-notifications.log 2>&1
 ```
 
 `INTEGRATION_POLLING_FLOOR_MINUTES=15` показва същия минимален интервал в панела. Входящите форми се записват веднага; имейл известията и обработката на Skroutz webhook може да изчакат следващия worker. При натрупана опашка закъснението може да е по-голямо. Проверявайте частните логове и „История на обновяванията“. Завършването на започната API задача може да надвиши общия `--max-time`; самата задача има timeout 900 секунди при работещ pcntl. Това трябва да се съобрази с лимитите на конкретния план.

@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 import shutil
@@ -55,17 +56,20 @@ def main() -> None:
     contents += "\n$app->usePublicPath(require __DIR__.'/../public-path.php');\n\nreturn $app;\n"
     bootstrap.write_text(contents, encoding='utf-8')
 
-    subprocess.run([options.php, options.composer, 'install', '--no-dev', '--prefer-dist', '--no-interaction', '--no-progress', '--optimize-autoloader'], cwd=app, check=True)
-    subprocess.run([options.php, 'cpanel-preflight.php', '--build-check'], cwd=app, check=True)
-    subprocess.run([options.php, 'artisan', 'route:list', '--path=admin', '--json'], cwd=app, check=True, stdout=subprocess.DEVNULL)
-    subprocess.run([options.php, 'artisan', 'view:cache', '--no-ansi'], cwd=app, check=True)
-    subprocess.run([options.php, 'artisan', 'view:clear', '--no-ansi'], cwd=app, check=True)
+    build_env = os.environ.copy()
+    build_env['JAR_PUBLIC_PATH'] = str(web.resolve())
+    subprocess.run([options.php, options.composer, 'install', '--no-dev', '--prefer-dist', '--no-interaction', '--no-progress', '--optimize-autoloader'], cwd=app, check=True, env=build_env)
+    subprocess.run([options.php, 'cpanel-preflight.php', '--build-check'], cwd=app, check=True, env=build_env)
+    subprocess.run([options.php, 'artisan', 'route:list', '--path=admin', '--json'], cwd=app, check=True, stdout=subprocess.DEVNULL, env=build_env)
+    subprocess.run([options.php, 'artisan', 'view:cache', '--no-ansi'], cwd=app, check=True, env=build_env)
+    subprocess.run([options.php, 'artisan', 'view:clear', '--no-ansi'], cwd=app, check=True, env=build_env)
 
     shutil.copy2(root / 'docs/cpanel-upload.md', stage / 'UPLOAD-CPANEL.md')
     shutil.copy2(root / 'docs/admin-automation.md', stage / 'ADMIN-AUTOMATION.md')
     (stage / 'RELEASE.json').write_text(json.dumps({
         'built_at_utc': datetime.now(timezone.utc).isoformat(), 'php_minimum': '8.4',
         'domain_example': 'jarbl.bg', 'layout': ['jar-app (private)', 'public_html (web root)'],
+        'document_root': '/home/CPANEL_USER/public_html/jarbl.bg',
         'composer_dev_dependencies': False, 'contains_credentials_or_database': False,
         'cron_interval_minutes': 15,
     }, indent=2), encoding='utf-8')

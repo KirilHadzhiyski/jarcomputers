@@ -17,6 +17,7 @@
 /tools/downloads
 /tools/node
 /tools/php
+__pycache__/
 /tmp_test_project.mpp
 /tmp_test_project2.mpp
 /google-maps-place.html

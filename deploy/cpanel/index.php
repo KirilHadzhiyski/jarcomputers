@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Default layout: /home/ACCOUNT/public_html next to /home/ACCOUNT/jar-app.
-$appRoot = dirname(__DIR__).'/jar-app';
+// jarbl.bg is an addon domain at /home/ACCOUNT/public_html/jarbl.bg.
+// Keep the Laravel application outside the public tree at /home/ACCOUNT/jar-app.
+$appRoot = dirname(__DIR__, 2).'/jar-app';
 if (! is_file($appRoot.'/.env')) {
     http_response_code(503);
     header('Content-Type: text/plain; charset=UTF-8');
