@@ -94,15 +94,21 @@ def main() -> None:
                     raise RuntimeError(f'Missing compiled asset: {relative}')
 
     # Unix modes allow cPanel's extractor to preserve usable directory/file permissions.
+    # ZipInfo defaults to 1980-01-01 when no timestamp is supplied. Some cPanel
+    # File Manager versions display that sentinel as 1899 after extraction, so
+    # stamp every archive entry with the actual local release build time.
+    archive_timestamp = datetime.now().timetuple()[:6]
     archive = dist / f'jar-computers-cpanel-{stamp}.zip'
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as output:
         for directory in sorted(p for p in stage.rglob('*') if p.is_dir()):
             entry = zipfile.ZipInfo(directory.relative_to(stage).as_posix() + '/')
+            entry.date_time = archive_timestamp
             entry.create_system = 3
             entry.external_attr = (0o40755 << 16) | 0x10
             output.writestr(entry, b'')
         for file in files:
             entry = zipfile.ZipInfo(file.relative_to(stage).as_posix())
+            entry.date_time = archive_timestamp
             entry.create_system = 3
             entry.external_attr = 0o100644 << 16
             entry.compress_type = zipfile.ZIP_DEFLATED
@@ -110,6 +116,14 @@ def main() -> None:
     with zipfile.ZipFile(archive) as release:
         if release.testzip() is not None:
             raise RuntimeError('Archive integrity check failed.')
+        unexpected_timestamps = [
+            entry.filename for entry in release.infolist()
+            if entry.date_time[:5] != archive_timestamp[:5]
+        ]
+        if unexpected_timestamps:
+            raise RuntimeError(
+                f'Archive timestamp check failed for {len(unexpected_timestamps)} entries.'
+            )
     with archive.open('rb') as archive_stream:
         digest = hashlib.file_digest(archive_stream, 'sha256').hexdigest()
     archive.with_suffix('.sha256').write_text(f'{digest}  {archive.name}\n', encoding='ascii')
