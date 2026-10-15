@@ -9,6 +9,7 @@ use App\Services\Business\BusinessIntakeService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Schema::defaultStringLength(191);
+
         RepairRequest::created(fn ($request) => app(BusinessIntakeService::class)->repairRequest($request));
         Ticket::saved(fn ($ticket) => app(BusinessIntakeService::class)->ticket($ticket));
         Conversation::saved(fn ($conversation) => app(BusinessIntakeService::class)->conversation($conversation));

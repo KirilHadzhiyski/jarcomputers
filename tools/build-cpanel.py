@@ -2,14 +2,32 @@
 from __future__ import annotations
 
 import argparse
+import calendar
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import shutil
 import subprocess
 import zipfile
+
+
+def sofia_now() -> datetime:
+    """Return current wall-clock time in Sofia without an external tzdata package."""
+    utc_now = datetime.now(timezone.utc)
+
+    def last_sunday(month: int) -> datetime:
+        last_day = calendar.monthrange(utc_now.year, month)[1]
+        candidate = datetime(utc_now.year, month, last_day, tzinfo=timezone.utc)
+        return candidate - timedelta(days=(candidate.weekday() + 1) % 7)
+
+    summer_time_starts = last_sunday(3).replace(hour=1)
+    summer_time_ends = last_sunday(10).replace(hour=1)
+    offset_hours = 3 if summer_time_starts <= utc_now < summer_time_ends else 2
+    offset = timezone(timedelta(hours=offset_hours))
+
+    return utc_now.astimezone(offset)
 
 
 def main() -> None:
@@ -18,7 +36,8 @@ def main() -> None:
     args.add_argument('--composer', required=True)
     options = args.parse_args()
     root = Path(__file__).resolve().parents[1]
-    stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
+    release_time = sofia_now()
+    stamp = release_time.strftime('%Y%m%d-%H%M%S')
     dist = root / 'dist'
     stage = dist / f'cpanel-stage-{stamp}'
     app = stage / 'jar-app'
@@ -97,7 +116,7 @@ def main() -> None:
     # ZipInfo defaults to 1980-01-01 when no timestamp is supplied. Some cPanel
     # File Manager versions display that sentinel as 1899 after extraction, so
     # stamp every archive entry with the actual local release build time.
-    archive_timestamp = datetime.now().timetuple()[:6]
+    archive_timestamp = release_time.timetuple()[:6]
     archive = dist / f'jar-computers-cpanel-{stamp}.zip'
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as output:
         for directory in sorted(p for p in stage.rglob('*') if p.is_dir()):
