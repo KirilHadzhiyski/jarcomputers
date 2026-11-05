@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuditLogController;
 use App\Http\Controllers\Admin\AdminBusinessDashboardController;
 use App\Http\Controllers\Admin\AdminBusinessReportController;
 use App\Http\Controllers\Admin\AdminBusinessResourceController;
+use App\Http\Controllers\Admin\AdminClientSubscriptionController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminInboxController;
 use App\Http\Controllers\Admin\AdminIntegrationController;
@@ -14,13 +16,16 @@ use App\Http\Controllers\Admin\AdminPricingMarketController;
 use App\Http\Controllers\Admin\AdminPricingSourceController;
 use App\Http\Controllers\Admin\AdminPricingSyncController;
 use App\Http\Controllers\Admin\AdminSkroutzController;
+use App\Http\Controllers\Admin\AdminSubscriptionDashboardController;
+use App\Http\Controllers\Admin\AdminSubscriptionPaymentController;
+use App\Http\Controllers\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\Admin\AdminTicketController;
+use App\Http\Controllers\Admin\AdminUsageRecordController;
 use App\Http\Controllers\Admin\AdminUserController;
-use App\Http\Controllers\Admin\AdminWorkspaceController;
 use App\Http\Controllers\Admin\AdminWorkflowController;
 use App\Http\Controllers\Admin\AdminWorkflowRunController;
 use App\Http\Controllers\Admin\AdminWorkflowStepController;
-use App\Http\Controllers\Admin\AdminAuditLogController;
+use App\Http\Controllers\Admin\AdminWorkspaceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MessagingWebhookController;
@@ -28,6 +33,7 @@ use App\Http\Controllers\RepairRequestController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SkroutzWebhookController;
 use App\Http\Controllers\TicketController;
+use App\Http\Middleware\AdminAuditTrail;
 use App\Services\Integrations\IntegrationRegistry;
 use App\Support\SiteData;
 use Illuminate\Support\Facades\Route;
@@ -57,7 +63,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/verify-account/resend', [AuthController::class, 'resendVerificationCode'])->middleware('throttle:auth-resend')->name('verification.resend');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'account.active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::put('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
@@ -68,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', \App\Http\Middleware\AdminAuditTrail::class])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'account.active', 'admin', AdminAuditTrail::class])->group(function () {
     Route::get('/skroutz', [AdminSkroutzController::class, 'index'])->name('skroutz.index');
     Route::get('/skroutz/catalog.xml', [AdminSkroutzController::class, 'xml'])->name('skroutz.xml');
     Route::get('/skroutz/inventory-preview.json', [AdminSkroutzController::class, 'batch'])->name('skroutz.batch');
@@ -97,6 +103,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', \App\Http\M
     Route::delete('/workflows/{workflow}/steps/{step}', [AdminWorkflowStepController::class, 'destroy'])->name('workflows.steps.destroy');
     Route::get('/workflow-runs', [AdminWorkflowRunController::class, 'index'])->name('workflow-runs.index');
     Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit-log.index');
+    Route::get('/subscriptions', [AdminSubscriptionDashboardController::class, 'index'])->name('subscriptions.dashboard');
+    Route::resource('subscription-plans', AdminSubscriptionPlanController::class)->except(['show']);
+    Route::resource('client-subscriptions', AdminClientSubscriptionController::class)->except(['show']);
+    Route::resource('subscription-payments', AdminSubscriptionPaymentController::class)->except(['show']);
+    Route::get('/usage-records', [AdminUsageRecordController::class, 'index'])->name('usage-records.index');
+    Route::post('/usage-records', [AdminUsageRecordController::class, 'store'])->name('usage-records.store');
 
     Route::prefix('business')->name('business.')->group(function () {
         Route::get('/', [AdminBusinessDashboardController::class, 'index'])->name('dashboard');

@@ -9,6 +9,7 @@ use App\Models\Workflow;
 use App\Models\WorkflowRun;
 use App\Services\Business\AdminBusinessSummaryService;
 use App\Services\Pricing\PricingOpportunitySummaryService;
+use App\Services\Subscriptions\SubscriptionSummaryService;
 use App\Support\LaunchReadiness;
 use Illuminate\View\View;
 
@@ -17,6 +18,7 @@ class AdminDashboardController extends Controller
     public function __construct(
         private readonly PricingOpportunitySummaryService $pricingSummaryService,
         private readonly AdminBusinessSummaryService $businessSummaryService,
+        private readonly SubscriptionSummaryService $subscriptionSummaryService,
     ) {}
 
     public function index(): View
@@ -31,6 +33,7 @@ class AdminDashboardController extends Controller
                 'active' => Workflow::query()->where('status', 'active')->count(),
                 'failed_runs' => WorkflowRun::query()->where('status', 'failed')->where('created_at', '>=', now()->subDays(7))->count(),
             ],
+            'subscriptionSummary' => $this->subscriptionSummaryService->summary(),
             'pricingSummary' => $this->pricingSummaryService->summary(),
             'businessSummary' => $this->businessSummaryService->summary(),
             'launchReadiness' => LaunchReadiness::report(),

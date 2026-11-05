@@ -44,6 +44,14 @@ class AuthController extends Controller
                 ->onlyInput('email');
         }
 
+        if ($user->isAccessBlocked()) {
+            return back()
+                ->withErrors([
+                    'email' => 'Профилът е временно спрян или деактивиран. Свържете се с администратор.',
+                ])
+                ->onlyInput('email');
+        }
+
         if (! $user->hasVerifiedEmail()) {
             $this->sendVerificationCode($user);
             $request->session()->put('verification_email', $user->email);

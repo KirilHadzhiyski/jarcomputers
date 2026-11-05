@@ -63,6 +63,16 @@
                 </div>
 
                 <div class="space-y-6">
+                    @if ($subscription)
+                        <div class="card-soft">
+                            <div class="flex flex-wrap items-start justify-between gap-4">
+                                <div><p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Абонамент</p><h2 class="mt-2 text-xl font-semibold">{{ $subscription->plan?->name }}</h2><p class="mt-2 text-sm text-muted-foreground">{{ \App\Models\ClientSubscription::STATUS_LABELS[$subscription->status] ?? $subscription->status }} · подновяване {{ $subscription->renews_at?->format('d.m.Y') ?? 'не е зададено' }}</p></div>
+                                <span class="status-pill status-pill-{{ $subscription->status }}">{{ number_format((float) $subscription->plan?->monthly_price, 2) }} {{ $subscription->plan?->currency_code }}</span>
+                            </div>
+                            <div class="mt-6 grid gap-3 sm:grid-cols-3"><div class="rounded-2xl border bg-background p-4"><p class="text-xs text-muted-foreground">Работни процеси</p><p class="mt-2 text-2xl font-semibold">{{ $workflowCount }} / {{ $subscription->plan?->workflow_limit }}</p></div><div class="rounded-2xl border bg-background p-4"><p class="text-xs text-muted-foreground">Лимит записи</p><p class="mt-2 text-2xl font-semibold">{{ number_format($subscription->plan?->records_per_month ?? 0) }}</p></div><div class="rounded-2xl border bg-background p-4"><p class="text-xs text-muted-foreground">Разход този месец</p><p class="mt-2 text-2xl font-semibold">{{ number_format($usageCostThisMonth, 2) }} EUR</p></div></div>
+                        </div>
+                    @endif
+
                     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         <div class="card-soft">
                             <p class="text-sm text-muted-foreground">Общо поръчки</p>

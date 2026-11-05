@@ -18,10 +18,15 @@ class DashboardController extends Controller
             ->selectRaw('status, count(*) as aggregate')
             ->groupBy('status')
             ->pluck('aggregate', 'status');
+        $subscription = $user->currentSubscription()->with('plan')->first();
+        $usageCostThisMonth = (float) $user->usageRecords()->where('occurred_at', '>=', now()->startOfMonth())->sum('cost');
 
         return view('dashboard.index', [
             'tickets' => $tickets,
             'ticketStats' => $ticketStats,
+            'subscription' => $subscription,
+            'usageCostThisMonth' => $usageCostThisMonth,
+            'workflowCount' => $user->workflows()->count(),
             'contactChannels' => User::CONTACT_CHANNEL_LABELS,
             'statusLabels' => Ticket::STATUS_LABELS,
             'seo' => [

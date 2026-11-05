@@ -19,6 +19,12 @@ class User extends Authenticatable
         'phone' => 'Телефон',
     ];
 
+    public const ACCOUNT_STATUS_LABELS = [
+        'active' => 'Активен',
+        'suspended' => 'Временно спрян',
+        'deactivated' => 'Деактивиран',
+    ];
+
     protected $fillable = [
         'name',
         'email',
@@ -26,6 +32,10 @@ class User extends Authenticatable
         'preferred_contact_channel',
         'password',
         'role',
+        'account_status',
+        'suspended_until',
+        'deactivated_at',
+        'admin_metadata',
         'email_verified_at',
         'email_verification_code',
         'email_verification_expires_at',
@@ -43,6 +53,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'email_verification_expires_at' => 'datetime',
             'password' => 'hashed',
+            'suspended_until' => 'datetime',
+            'deactivated_at' => 'datetime',
+            'admin_metadata' => 'array',
         ];
     }
 
@@ -61,9 +74,45 @@ class User extends Authenticatable
         return $this->hasMany(Workflow::class, 'client_user_id');
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(ClientSubscription::class);
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOne(ClientSubscription::class)
+            ->whereIn('status', ['trial', 'active', 'past_due', 'paused'])
+            ->latestOfMany();
+    }
+
+    public function usageRecords()
+    {
+        return $this->hasMany(UsageRecord::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isAccessBlocked(): bool
+    {
+        if ($this->account_status === 'deactivated' || filled($this->deactivated_at)) {
+            return true;
+        }
+
+        return $this->account_status === 'suspended'
+            && (blank($this->suspended_until) || $this->suspended_until->isFuture());
+    }
+
+    public function accountStatusLabel(): string
+    {
+        if ($this->account_status === 'suspended' && filled($this->suspended_until) && $this->suspended_until->isPast()) {
+            return 'Активен след изтичане на паузата';
+        }
+
+        return self::ACCOUNT_STATUS_LABELS[$this->account_status] ?? $this->account_status;
     }
 
     public function hasVerifiedEmail(): bool

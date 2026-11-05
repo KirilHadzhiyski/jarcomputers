@@ -59,6 +59,25 @@
                         </select>
                     </label>
 
+                    <label class="block text-sm font-medium text-foreground">
+                        Статус на достъпа
+                        <select class="input-shell mt-2" name="account_status">
+                            @foreach ($accountStatuses as $value => $label)
+                                <option value="{{ $value }}" @selected(old('account_status', $user->account_status ?? 'active') === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+
+                    <label class="block text-sm font-medium text-foreground">
+                        Спрян до (по желание)
+                        <input class="input-shell mt-2" type="datetime-local" name="suspended_until" value="{{ old('suspended_until', isset($user) && $user->suspended_until ? $user->suspended_until->format('Y-m-d\TH:i') : '') }}">
+                    </label>
+
+                    <label class="block text-sm font-medium text-foreground">
+                        Вътрешни бележки за профила
+                        <textarea class="input-shell mt-2 h-auto" rows="4" name="account_notes">{{ old('account_notes', $user->admin_metadata['notes'] ?? '') }}</textarea>
+                    </label>
+
                     @if ($isEdit)
                         <div class="rounded-2xl border border-border/70 bg-white/70 p-4 text-sm text-muted-foreground">
                             Потвърден имейл: <span class="font-medium text-foreground">{{ $user->hasVerifiedEmail() ? 'Да' : 'Не' }}</span>
@@ -67,12 +86,12 @@
 
                     <label class="block text-sm font-medium text-foreground">
                         {{ $isEdit ? 'Нова парола (по желание)' : 'Парола' }}
-                        <input class="input-shell mt-2" type="password" name="password" {{ $isEdit ? '' : 'required' }}>
+                        <input class="input-shell mt-2" type="password" name="password" autocomplete="new-password" {{ $isEdit ? '' : 'required' }}>
                     </label>
 
                     <label class="block text-sm font-medium text-foreground">
                         Потвърди паролата
-                        <input class="input-shell mt-2" type="password" name="password_confirmation" {{ $isEdit ? '' : 'required' }}>
+                        <input class="input-shell mt-2" type="password" name="password_confirmation" autocomplete="new-password" {{ $isEdit ? '' : 'required' }}>
                     </label>
 
                     <div class="flex flex-wrap gap-3">

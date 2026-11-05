@@ -13,6 +13,7 @@
             <div class="admin-shell-grid">
                 <a href="{{ route('admin.workflows.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Работни процеси</h2><p class="mt-3 text-sm text-muted-foreground">{{ $workflowSummary['active'] }} активни от общо {{ $workflowSummary['total'] }} процеса.</p></a>
                 <a href="{{ route('admin.workflow-runs.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Мониторинг</h2><p class="mt-3 text-sm text-muted-foreground">{{ $workflowSummary['failed_runs'] }} неуспешни изпълнения през последните 7 дни.</p></a>
+                <a href="{{ route('admin.subscriptions.dashboard') }}" class="card-soft block"><h2 class="text-xl font-semibold">Абонаменти</h2><p class="mt-3 text-sm text-muted-foreground">{{ $subscriptionSummary['active_count'] }} активни · @forelse ($subscriptionSummary['mrr_by_currency'] as $currency => $total){{ number_format($total, 2) }} {{ $currency }}@if (! $loop->last) · @endif @empty 0.00 @endforelse месечно.</p></a>
                 <a href="{{ route('admin.integrations.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Автоматични данни</h2><p class="mt-3 text-sm text-muted-foreground">Свързани източници, настройки и история на обновяванията.</p></a>
                 <a href="{{ route('admin.inbox.index') }}" class="card-soft block"><h2 class="text-xl font-semibold">Входящи заявки</h2><p class="mt-3 text-sm text-muted-foreground">Получени заявки за ремонт и разговори с клиенти.</p></a>
                 <div class="card-soft">

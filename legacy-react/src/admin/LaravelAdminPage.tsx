@@ -526,6 +526,12 @@ export default function AdminPage() {
                         Мониторинг
                     </a>
                     <a
+                        href="/admin/subscriptions"
+                        className="shrink-0 rounded-full border bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+                    >
+                        Абонаменти
+                    </a>
+                    <a
                         href="/admin/integrations"
                         className="shrink-0 rounded-full border bg-white px-4 py-2 text-sm font-semibold text-slate-700"
                     >

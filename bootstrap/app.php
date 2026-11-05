@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\CanonicalHostRedirect;
+use App\Http\Middleware\EnsureAccountActive;
+use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,12 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append([
-            \App\Http\Middleware\CanonicalHostRedirect::class,
-            \App\Http\Middleware\SecurityHeaders::class,
+            CanonicalHostRedirect::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'admin' => EnsureAdmin::class,
+            'account.active' => EnsureAccountActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -534,6 +534,7 @@
     }
 
     .status-pill-draft,
+    .status-pill-deactivated,
     .status-pill-archived {
         @apply bg-slate-500/10 text-slate-700 ring-1 ring-slate-500/20;
     }
@@ -556,12 +557,14 @@
     .status-pill-active,
     .status-pill-lead,
     .status-pill-pending,
+    .status-pill-trial,
     .status-pill-backup,
     .status-pill-ordered {
         @apply bg-blue-500/10 text-blue-700 ring-1 ring-blue-500/20;
     }
 
     .status-pill-diagnostics,
+    .status-pill-suspended,
     .status-pill-waiting_parts,
     .status-pill-deposit,
     .status-pill-low_stock,
@@ -589,6 +592,10 @@
 
     .status-pill-queued {
         @apply bg-slate-500/10 text-slate-700 ring-1 ring-slate-500/20;
+    }
+
+    .status-pill-past_due {
+        @apply bg-orange-500/10 text-orange-700 ring-1 ring-orange-500/20;
     }
 }
 

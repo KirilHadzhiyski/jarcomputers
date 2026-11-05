@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AdminWorkflowController extends Controller
@@ -44,6 +45,7 @@ class AdminWorkflowController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validated($request);
+        $this->assertWorkflowAllowance($validated['client_user_id'] ?? null);
         $validated['created_by'] = $request->user()->id;
         $validated['updated_by'] = $request->user()->id;
 
@@ -64,6 +66,7 @@ class AdminWorkflowController extends Controller
     public function update(Request $request, Workflow $workflow): RedirectResponse
     {
         $validated = $this->validated($request, $workflow);
+        $this->assertWorkflowAllowance($validated['client_user_id'] ?? null, $workflow);
         $validated['updated_by'] = $request->user()->id;
         $workflow->update($validated);
 
@@ -85,7 +88,7 @@ class AdminWorkflowController extends Controller
     {
         return [
             'workflow' => $workflow,
-            'clients' => User::query()->where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']),
+            'clients' => User::query()->with('currentSubscription.plan')->where('role', 'user')->orderBy('name')->get(['id', 'name', 'email']),
             'statusLabels' => Workflow::STATUS_LABELS,
             'triggerLabels' => Workflow::TRIGGER_LABELS,
             'sourceLabels' => Workflow::SOURCE_LABELS,
@@ -140,5 +143,31 @@ class AdminWorkflowController extends Controller
         }
 
         return $slug;
+    }
+
+    private function assertWorkflowAllowance(?int $clientId, ?Workflow $workflow = null): void
+    {
+        if (! $clientId) {
+            return;
+        }
+
+        $client = User::query()->with('currentSubscription.plan')->findOrFail($clientId);
+        $limit = $client->currentSubscription?->plan?->workflow_limit;
+
+        if ($limit === null || $limit === 0) {
+            return;
+        }
+
+        $count = Workflow::query()
+            ->where('client_user_id', $clientId)
+            ->where('status', '!=', 'archived')
+            ->when($workflow, fn ($query) => $query->whereKeyNot($workflow->id))
+            ->count();
+
+        if ($count >= $limit) {
+            throw ValidationException::withMessages([
+                'client_user_id' => "Планът на клиента позволява до {$limit} активни работни процеса.",
+            ]);
+        }
     }
 }

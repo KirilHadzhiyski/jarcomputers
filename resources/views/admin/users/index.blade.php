@@ -24,6 +24,7 @@
                             <th class="px-4 py-3">Имейл</th>
                             <th class="px-4 py-3">Телефон</th>
                             <th class="px-4 py-3">Роля</th>
+                            <th class="px-4 py-3">Достъп</th>
                             <th class="px-4 py-3">Потвърден</th>
                             <th class="px-4 py-3"></th>
                         </tr>
@@ -36,6 +37,7 @@
                                 <td class="px-4 py-3">{{ $user->email }}</td>
                                 <td class="px-4 py-3">{{ $user->phone ?: '—' }}</td>
                                 <td class="px-4 py-3">{{ $user->role }}</td>
+                                <td class="px-4 py-3"><span class="status-pill status-pill-{{ $user->account_status }}">{{ $user->accountStatusLabel() }}</span></td>
                                 <td class="px-4 py-3">{{ $user->hasVerifiedEmail() ? 'Да' : 'Не' }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="font-medium text-primary">Редакция</a>
