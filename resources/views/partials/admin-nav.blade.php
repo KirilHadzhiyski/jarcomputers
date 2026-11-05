@@ -1,4 +1,7 @@
 <div class="mb-8 flex flex-wrap gap-3">
+    <a href="{{ route('admin.workflows.index') }}" class="btn-secondary-dark {{ request()->routeIs('admin.workflows.*') ? 'nav-link-active' : '' }}">Работни процеси</a>
+    <a href="{{ route('admin.workflow-runs.index') }}" class="btn-secondary-dark {{ request()->routeIs('admin.workflow-runs.*') ? 'nav-link-active' : '' }}">Мониторинг</a>
+    <a href="{{ route('admin.audit-log.index') }}" class="btn-secondary-dark {{ request()->routeIs('admin.audit-log.*') ? 'nav-link-active' : '' }}">Журнал</a>
     <a href="{{ route('admin.skroutz.index') }}" class="btn-secondary-dark">Skroutz</a>
     <a href="{{ route('admin.integrations.index') }}" class="btn-secondary-dark {{ request()->routeIs('admin.integrations.index') ? 'nav-link-active' : '' }}">Интеграции</a>
     <a href="{{ route('admin.inbox.index') }}" class="btn-secondary-dark {{ request()->routeIs('admin.inbox.*') ? 'nav-link-active' : '' }}">Входящи заявки</a>

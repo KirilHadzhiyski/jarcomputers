@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(TicketUpdate::class, 'author_id');
     }
 
+    public function workflows()
+    {
+        return $this->hasMany(Workflow::class, 'client_user_id');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

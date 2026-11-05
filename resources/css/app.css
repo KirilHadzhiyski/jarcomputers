@@ -570,6 +570,8 @@
     }
 
     .status-pill-in_progress,
+    .status-pill-running,
+    .status-pill-completed,
     .status-pill-ready,
     .status-pill-delivered,
     .status-pill-paid,
@@ -579,9 +581,14 @@
     }
 
     .status-pill-cancelled,
+    .status-pill-failed,
     .status-pill-refunded,
     .status-pill-blocked {
         @apply bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/20;
+    }
+
+    .status-pill-queued {
+        @apply bg-slate-500/10 text-slate-700 ring-1 ring-slate-500/20;
     }
 }
 

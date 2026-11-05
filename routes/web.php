@@ -17,6 +17,10 @@ use App\Http\Controllers\Admin\AdminSkroutzController;
 use App\Http\Controllers\Admin\AdminTicketController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminWorkspaceController;
+use App\Http\Controllers\Admin\AdminWorkflowController;
+use App\Http\Controllers\Admin\AdminWorkflowRunController;
+use App\Http\Controllers\Admin\AdminWorkflowStepController;
+use App\Http\Controllers\Admin\AdminAuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MessagingWebhookController;
@@ -64,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', \App\Http\Middleware\AdminAuditTrail::class])->group(function () {
     Route::get('/skroutz', [AdminSkroutzController::class, 'index'])->name('skroutz.index');
     Route::get('/skroutz/catalog.xml', [AdminSkroutzController::class, 'xml'])->name('skroutz.xml');
     Route::get('/skroutz/inventory-preview.json', [AdminSkroutzController::class, 'batch'])->name('skroutz.batch');
@@ -86,6 +90,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/external-documents', [AdminIntegrationController::class, 'documents'])->name('integrations.documents');
     Route::get('/inbox', [AdminInboxController::class, 'index'])->name('inbox.index');
     Route::get('/inbox/{conversation}', [AdminInboxController::class, 'show'])->name('inbox.show');
+
+    Route::resource('workflows', AdminWorkflowController::class)->except(['show']);
+    Route::post('/workflows/{workflow}/steps', [AdminWorkflowStepController::class, 'store'])->name('workflows.steps.store');
+    Route::patch('/workflows/{workflow}/steps/{step}/move', [AdminWorkflowStepController::class, 'move'])->name('workflows.steps.move');
+    Route::delete('/workflows/{workflow}/steps/{step}', [AdminWorkflowStepController::class, 'destroy'])->name('workflows.steps.destroy');
+    Route::get('/workflow-runs', [AdminWorkflowRunController::class, 'index'])->name('workflow-runs.index');
+    Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit-log.index');
 
     Route::prefix('business')->name('business.')->group(function () {
         Route::get('/', [AdminBusinessDashboardController::class, 'index'])->name('dashboard');

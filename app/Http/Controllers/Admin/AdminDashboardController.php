@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Models\Workflow;
+use App\Models\WorkflowRun;
 use App\Services\Business\AdminBusinessSummaryService;
 use App\Services\Pricing\PricingOpportunitySummaryService;
 use App\Support\LaunchReadiness;
@@ -15,8 +17,7 @@ class AdminDashboardController extends Controller
     public function __construct(
         private readonly PricingOpportunitySummaryService $pricingSummaryService,
         private readonly AdminBusinessSummaryService $businessSummaryService,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {
@@ -25,6 +26,11 @@ class AdminDashboardController extends Controller
             'openTicketCount' => Ticket::query()->where('status', 'open')->count(),
             'readyTicketCount' => Ticket::query()->where('status', 'ready_for_pickup')->count(),
             'userCount' => User::query()->count(),
+            'workflowSummary' => [
+                'total' => Workflow::query()->count(),
+                'active' => Workflow::query()->where('status', 'active')->count(),
+                'failed_runs' => WorkflowRun::query()->where('status', 'failed')->where('created_at', '>=', now()->subDays(7))->count(),
+            ],
             'pricingSummary' => $this->pricingSummaryService->summary(),
             'businessSummary' => $this->businessSummaryService->summary(),
             'launchReadiness' => LaunchReadiness::report(),

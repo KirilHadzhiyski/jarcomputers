@@ -514,6 +514,18 @@ export default function AdminPage() {
                         </button>
                     ))}
                     <a
+                        href="/admin/workflows"
+                        className="shrink-0 rounded-full border bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+                    >
+                        Процеси
+                    </a>
+                    <a
+                        href="/admin/workflow-runs"
+                        className="shrink-0 rounded-full border bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+                    >
+                        Мониторинг
+                    </a>
+                    <a
                         href="/admin/integrations"
                         className="shrink-0 rounded-full border bg-white px-4 py-2 text-sm font-semibold text-slate-700"
                     >
