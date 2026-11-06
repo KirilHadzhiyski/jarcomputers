@@ -3,6 +3,7 @@
 use App\Http\Middleware\CanonicalHostRedirect;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\RequireAdminMfa;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'admin.mfa' => RequireAdminMfa::class,
             'account.active' => EnsureAccountActive::class,
         ]);
     })

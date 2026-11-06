@@ -11,6 +11,7 @@
                 <div class="flex flex-wrap gap-3">
                     <a href="{{ route('tickets.create') }}" class="btn-primary">Нова поръчка</a>
                     <a href="{{ route('tickets.index') }}" class="btn-secondary-dark">Всички поръчки</a>
+                    <a href="{{ route('security.show') }}" class="btn-secondary-dark">Сигурност</a>
                 </div>
             </div>
 
@@ -51,6 +52,11 @@
 
                         <div class="rounded-2xl border border-border/70 bg-white/70 p-4 text-sm text-muted-foreground">
                             Ще използваме тези данни, когато поръчката ви е готова или има нужда от уточнение.
+                        </div>
+
+                        <div class="rounded-2xl border border-border/70 bg-white/70 p-4 text-sm text-muted-foreground">
+                            Двуфакторна защита: <strong class="text-foreground">{{ auth()->user()->hasTwoFactorEnabled() ? 'активна' : 'неактивна' }}</strong>.
+                            <a href="{{ route('security.show') }}" class="ml-1 font-semibold text-primary">Настройки</a>
                         </div>
 
                         <div class="flex flex-wrap gap-3">

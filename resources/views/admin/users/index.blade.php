@@ -26,6 +26,7 @@
                             <th class="px-4 py-3">Роля</th>
                             <th class="px-4 py-3">Достъп</th>
                             <th class="px-4 py-3">Потвърден</th>
+                            <th class="px-4 py-3">MFA</th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -39,6 +40,7 @@
                                 <td class="px-4 py-3">{{ $user->role }}</td>
                                 <td class="px-4 py-3"><span class="status-pill status-pill-{{ $user->account_status }}">{{ $user->accountStatusLabel() }}</span></td>
                                 <td class="px-4 py-3">{{ $user->hasVerifiedEmail() ? 'Да' : 'Не' }}</td>
+                                <td class="px-4 py-3">{{ $user->hasTwoFactorEnabled() ? 'Активна' : 'Не' }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="font-medium text-primary">Редакция</a>
                                 </td>

@@ -45,6 +45,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'email_verification_code',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected function casts(): array
@@ -56,6 +58,10 @@ class User extends Authenticatable
             'suspended_until' => 'datetime',
             'deactivated_at' => 'datetime',
             'admin_metadata' => 'array',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
+            'two_factor_last_used_step' => 'integer',
         ];
     }
 
@@ -118,6 +124,11 @@ class User extends Authenticatable
     public function hasVerifiedEmail(): bool
     {
         return filled($this->email_verified_at);
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return filled($this->two_factor_secret) && filled($this->two_factor_confirmed_at);
     }
 
     public function preferredContactLabel(): string

@@ -61,6 +61,17 @@ class AuthController extends Controller
                 ->with('status', 'Профилът още не е потвърден. Изпратихме нов код на вашия имейл.');
         }
 
+        if ($user->hasTwoFactorEnabled()) {
+            $request->session()->regenerate();
+            $request->session()->put('two_factor_login', [
+                'user_id' => $user->id,
+                'remember' => $request->boolean('remember'),
+                'expires_at' => now()->addMinutes(10)->timestamp,
+            ]);
+
+            return redirect()->route('two-factor.challenge');
+        }
+
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 

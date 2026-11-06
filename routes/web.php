@@ -33,6 +33,8 @@ use App\Http\Controllers\RepairRequestController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SkroutzWebhookController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TwoFactorChallengeController;
+use App\Http\Controllers\TwoFactorSettingsController;
 use App\Http\Controllers\WorkflowWebhookController;
 use App\Http\Middleware\AdminAuditTrail;
 use App\Services\Integrations\IntegrationRegistry;
@@ -62,12 +64,20 @@ Route::middleware('guest')->group(function () {
     Route::get('/verify-account', [AuthController::class, 'showVerification'])->name('verification.notice');
     Route::post('/verify-account', [AuthController::class, 'verify'])->middleware('throttle:auth-verify')->name('verification.verify');
     Route::post('/verify-account/resend', [AuthController::class, 'resendVerificationCode'])->middleware('throttle:auth-resend')->name('verification.resend');
+    Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');
+    Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->middleware('throttle:auth-mfa')->name('two-factor.challenge.store');
 });
 
 Route::middleware(['auth', 'account.active'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::put('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::get('/dashboard/security', [TwoFactorSettingsController::class, 'show'])->name('security.show');
+    Route::post('/dashboard/security/two-factor', [TwoFactorSettingsController::class, 'prepare'])->middleware('throttle:auth-mfa-settings')->name('security.two-factor.prepare');
+    Route::post('/dashboard/security/two-factor/confirm', [TwoFactorSettingsController::class, 'confirm'])->middleware('throttle:auth-mfa-settings')->name('security.two-factor.confirm');
+    Route::delete('/dashboard/security/two-factor/pending', [TwoFactorSettingsController::class, 'cancel'])->name('security.two-factor.cancel');
+    Route::post('/dashboard/security/two-factor/recovery-codes', [TwoFactorSettingsController::class, 'regenerateRecoveryCodes'])->middleware('throttle:auth-mfa-settings')->name('security.two-factor.recovery-codes');
+    Route::delete('/dashboard/security/two-factor', [TwoFactorSettingsController::class, 'destroy'])->middleware('throttle:auth-mfa-settings')->name('security.two-factor.destroy');
 
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
@@ -75,7 +85,7 @@ Route::middleware(['auth', 'account.active'])->group(function () {
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'account.active', 'admin', AdminAuditTrail::class])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'account.active', 'admin', 'admin.mfa', AdminAuditTrail::class])->group(function () {
     Route::get('/skroutz', [AdminSkroutzController::class, 'index'])->name('skroutz.index');
     Route::get('/skroutz/catalog.xml', [AdminSkroutzController::class, 'xml'])->name('skroutz.xml');
     Route::get('/skroutz/inventory-preview.json', [AdminSkroutzController::class, 'batch'])->name('skroutz.batch');

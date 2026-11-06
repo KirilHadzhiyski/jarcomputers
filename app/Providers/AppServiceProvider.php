@@ -70,6 +70,18 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        RateLimiter::for('auth-mfa', function (Request $request): array {
+            return [
+                Limit::perMinutes(10, 8)->by($request->session()->getId().'|'.$request->ip()),
+            ];
+        });
+
+        RateLimiter::for('auth-mfa-settings', function (Request $request): array {
+            return [
+                Limit::perMinutes(10, 8)->by(($request->user()?->id ?? 'guest').'|'.$request->ip()),
+            ];
+        });
+
         RateLimiter::for('repair-requests', function (Request $request): array {
             return [
                 Limit::perMinutes(15, 5)->by($request->ip()),
