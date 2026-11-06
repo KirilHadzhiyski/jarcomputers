@@ -16,15 +16,16 @@ class WorkflowRun extends Model
     ];
 
     protected $fillable = [
-        'workflow_id', 'triggered_by', 'status', 'records_collected', 'records_matched',
+        'workflow_id', 'triggered_by', 'trigger_type', 'status', 'attempt', 'records_collected', 'records_matched',
         'records_exported', 'error_count', 'ai_cost', 'summary', 'error_message',
-        'started_at', 'finished_at',
+        'metrics', 'started_at', 'finished_at',
     ];
 
     protected function casts(): array
     {
         return [
             'ai_cost' => 'decimal:6',
+            'metrics' => 'array',
             'started_at' => 'datetime',
             'finished_at' => 'datetime',
         ];
@@ -38,5 +39,15 @@ class WorkflowRun extends Model
     public function actor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'triggered_by');
+    }
+
+    public function records()
+    {
+        return $this->hasMany(WorkflowRecord::class);
+    }
+
+    public function alerts()
+    {
+        return $this->hasMany(WorkflowAlert::class);
     }
 }

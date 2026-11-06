@@ -559,7 +559,8 @@
     .status-pill-pending,
     .status-pill-trial,
     .status-pill-backup,
-    .status-pill-ordered {
+    .status-pill-ordered,
+    .status-pill-info {
         @apply bg-blue-500/10 text-blue-700 ring-1 ring-blue-500/20;
     }
 
@@ -568,7 +569,8 @@
     .status-pill-waiting_parts,
     .status-pill-deposit,
     .status-pill-low_stock,
-    .status-pill-paused {
+    .status-pill-paused,
+    .status-pill-warning {
         @apply bg-amber-500/10 text-amber-700 ring-1 ring-amber-500/20;
     }
 
@@ -586,7 +588,8 @@
     .status-pill-cancelled,
     .status-pill-failed,
     .status-pill-refunded,
-    .status-pill-blocked {
+    .status-pill-blocked,
+    .status-pill-critical {
         @apply bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/20;
     }
 

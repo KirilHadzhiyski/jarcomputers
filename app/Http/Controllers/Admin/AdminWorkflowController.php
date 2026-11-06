@@ -45,15 +45,22 @@ class AdminWorkflowController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->validated($request);
+        $webhookSecret = null;
+        if ($validated['trigger_type'] === 'webhook') {
+            $webhookSecret = Str::random(64);
+            $validated['webhook_secret'] = $webhookSecret;
+        }
         $this->assertWorkflowAllowance($validated['client_user_id'] ?? null);
         $validated['created_by'] = $request->user()->id;
         $validated['updated_by'] = $request->user()->id;
 
         $workflow = Workflow::query()->create($validated);
 
-        return redirect()
+        $redirect = redirect()
             ->route('admin.workflows.edit', $workflow)
             ->with('status', 'Работният процес е създаден. Добавете стъпките му в редактора.');
+
+        return $webhookSecret ? $redirect->with('webhook_secret_once', $webhookSecret) : $redirect;
     }
 
     public function edit(Workflow $workflow): View
@@ -66,13 +73,23 @@ class AdminWorkflowController extends Controller
     public function update(Request $request, Workflow $workflow): RedirectResponse
     {
         $validated = $this->validated($request, $workflow);
+        $webhookSecret = null;
+        if ($validated['trigger_type'] === 'webhook' && ($request->boolean('rotate_webhook_secret') || blank($workflow->webhook_secret))) {
+            $webhookSecret = Str::random(64);
+            $validated['webhook_secret'] = $webhookSecret;
+        }
+        if ($validated['trigger_type'] !== 'webhook') {
+            $validated['webhook_secret'] = null;
+        }
         $this->assertWorkflowAllowance($validated['client_user_id'] ?? null, $workflow);
         $validated['updated_by'] = $request->user()->id;
         $workflow->update($validated);
 
-        return redirect()
+        $redirect = redirect()
             ->route('admin.workflows.edit', $workflow)
             ->with('status', 'Настройките на процеса са запазени.');
+
+        return $webhookSecret ? $redirect->with('webhook_secret_once', $webhookSecret) : $redirect;
     }
 
     public function destroy(Workflow $workflow): RedirectResponse
@@ -92,6 +109,8 @@ class AdminWorkflowController extends Controller
             'statusLabels' => Workflow::STATUS_LABELS,
             'triggerLabels' => Workflow::TRIGGER_LABELS,
             'sourceLabels' => Workflow::SOURCE_LABELS,
+            'sourceAuthLabels' => Workflow::SOURCE_AUTH_LABELS,
+            'allowedSourceHosts' => config('workflows.allowed_hosts', []),
             'approvalLabels' => Workflow::APPROVAL_LABELS,
             'stepTypeLabels' => WorkflowStep::TYPE_LABELS,
             'seo' => [
@@ -113,6 +132,10 @@ class AdminWorkflowController extends Controller
             'frequency_minutes' => ['nullable', 'required_if:trigger_type,schedule', 'integer', 'min:15', 'max:43200'],
             'source_type' => ['required', Rule::in(array_keys(Workflow::SOURCE_LABELS))],
             'source_url' => ['nullable', 'url:https', 'max:2000'],
+            'source_auth_type' => ['nullable', Rule::in(array_keys(Workflow::SOURCE_AUTH_LABELS))],
+            'source_token' => ['nullable', 'string', 'max:8000'],
+            'source_username' => ['nullable', 'string', 'max:255'],
+            'source_password' => ['nullable', 'string', 'max:8000'],
             'category_filters' => ['nullable', 'string', 'max:3000'],
             'approval_mode' => ['required', Rule::in(array_keys(Workflow::APPROVAL_LABELS))],
         ]);
@@ -127,6 +150,26 @@ class AdminWorkflowController extends Controller
             ->unique()
             ->values()
             ->all();
+
+        $authType = $validated['source_auth_type'] ?? 'none';
+        $validated['source_auth_type'] = $authType;
+        $existing = $workflow?->source_credentials ?? [];
+        $validated['source_credentials'] = match ($authType) {
+            'bearer' => ['token' => $validated['source_token'] ?? $existing['token'] ?? null],
+            'basic' => [
+                'username' => $validated['source_username'] ?? $existing['username'] ?? null,
+                'password' => $validated['source_password'] ?? $existing['password'] ?? null,
+            ],
+            default => null,
+        };
+        unset($validated['source_token'], $validated['source_username'], $validated['source_password']);
+
+        if ($authType === 'bearer' && blank($validated['source_credentials']['token'] ?? null)) {
+            throw ValidationException::withMessages(['source_token' => 'Въведете Bearer token за източника.']);
+        }
+        if ($authType === 'basic' && (blank($validated['source_credentials']['username'] ?? null) || ! array_key_exists('password', $validated['source_credentials']))) {
+            throw ValidationException::withMessages(['source_username' => 'Въведете потребител и парола за източника.']);
+        }
 
         return $validated;
     }

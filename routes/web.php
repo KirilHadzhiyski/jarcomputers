@@ -33,6 +33,7 @@ use App\Http\Controllers\RepairRequestController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SkroutzWebhookController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\WorkflowWebhookController;
 use App\Http\Middleware\AdminAuditTrail;
 use App\Services\Integrations\IntegrationRegistry;
 use App\Support\SiteData;
@@ -101,7 +102,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'account.active', 'a
     Route::post('/workflows/{workflow}/steps', [AdminWorkflowStepController::class, 'store'])->name('workflows.steps.store');
     Route::patch('/workflows/{workflow}/steps/{step}/move', [AdminWorkflowStepController::class, 'move'])->name('workflows.steps.move');
     Route::delete('/workflows/{workflow}/steps/{step}', [AdminWorkflowStepController::class, 'destroy'])->name('workflows.steps.destroy');
+    Route::post('/workflows/{workflow}/run', [AdminWorkflowRunController::class, 'store'])->middleware('throttle:10,1')->name('workflows.run');
     Route::get('/workflow-runs', [AdminWorkflowRunController::class, 'index'])->name('workflow-runs.index');
+    Route::get('/workflow-runs/{workflowRun}', [AdminWorkflowRunController::class, 'show'])->name('workflow-runs.show');
+    Route::patch('/workflow-alerts/{workflowAlert}/acknowledge', [AdminWorkflowRunController::class, 'acknowledge'])->name('workflow-alerts.acknowledge');
     Route::get('/audit-log', [AdminAuditLogController::class, 'index'])->name('audit-log.index');
     Route::get('/subscriptions', [AdminSubscriptionDashboardController::class, 'index'])->name('subscriptions.dashboard');
     Route::resource('subscription-plans', AdminSubscriptionPlanController::class)->except(['show']);
@@ -173,6 +177,7 @@ Route::get('/{serviceBase}-iphone-{series}', [SiteController::class, 'seo'])
 Route::post('/repair-requests', [RepairRequestController::class, 'store'])->middleware('throttle:repair-requests')->name('repair-requests.store');
 Route::get('/feeds/skroutz.xml', [SkroutzWebhookController::class, 'feed']);
 Route::post('/webhooks/skroutz', [SkroutzWebhookController::class, 'receive']);
+Route::post('/webhooks/workflows/{workflow:slug}', [WorkflowWebhookController::class, 'receive'])->middleware('throttle:60,1')->name('workflows.webhook');
 Route::get('/webhooks/{channel}', [MessagingWebhookController::class, 'verify'])->name('webhooks.verify');
 Route::post('/webhooks/{channel}', [MessagingWebhookController::class, 'receive'])->name('webhooks.receive');
 

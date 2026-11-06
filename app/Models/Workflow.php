@@ -22,7 +22,7 @@ class Workflow extends Model
     ];
 
     public const SOURCE_LABELS = [
-        'web_scraping' => 'Web scraping',
+        'web_scraping' => 'Web scraping (изисква одобрен runtime)',
         'rss' => 'RSS',
         'rest_api' => 'REST API',
         'graphql' => 'GraphQL',
@@ -35,9 +35,15 @@ class Workflow extends Model
         'automatic' => 'Автоматично решение',
     ];
 
+    public const SOURCE_AUTH_LABELS = [
+        'none' => 'Без удостоверяване',
+        'bearer' => 'Bearer token',
+        'basic' => 'Потребител и парола',
+    ];
+
     protected $fillable = [
         'client_user_id', 'created_by', 'updated_by', 'name', 'slug', 'description',
-        'status', 'trigger_type', 'frequency_minutes', 'source_type', 'source_url',
+        'status', 'trigger_type', 'frequency_minutes', 'source_type', 'source_url', 'source_auth_type', 'source_credentials', 'webhook_secret',
         'category_filters', 'approval_mode', 'last_run_at', 'next_run_at',
     ];
 
@@ -45,6 +51,8 @@ class Workflow extends Model
     {
         return [
             'category_filters' => 'array',
+            'source_credentials' => 'encrypted:array',
+            'webhook_secret' => 'encrypted',
             'last_run_at' => 'datetime',
             'next_run_at' => 'datetime',
         ];
@@ -68,5 +76,15 @@ class Workflow extends Model
     public function runs(): HasMany
     {
         return $this->hasMany(WorkflowRun::class)->latest();
+    }
+
+    public function records(): HasMany
+    {
+        return $this->hasMany(WorkflowRecord::class);
+    }
+
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(WorkflowAlert::class);
     }
 }

@@ -53,6 +53,7 @@ SuperHosting посочва PHP 8.4 в [PHP Manager](https://help.superhosting.b
 - `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` — пълните имена с cPanel префикса. Парола със специални символи се поставя в кавички.
 - Домейнът е подготвен за **https://jarbl.bg**. Ако предпочитате `jarbl.com`, променете APP_URL, ASSET_URL, PRIMARY_DOMAIN, CANONICAL_HOST и REDIRECT_HOSTS заедно.
 - `ADMIN_USER_EMAIL` и силна уникална `ADMIN_USER_PASSWORD` за първоначалния реален администратор.
+- `WORKFLOW_SOURCE_HOSTS` — точните разрешени домейни за REST/RSS/GraphQL/файлови workflow източници, разделени със запетая. Не използвайте общи wildcard стойности.
 - Оставете `APP_ENV=production`, `APP_DEBUG=false`, secure cookies и изключен Skroutz feed.
 - `TRUSTED_PROXIES` остава празно при директен Apache. При reverse proxy въведете само потвърдените адреси; не използвайте `*` без проверка, защото Skroutz webhook използва IP ограничение.
 

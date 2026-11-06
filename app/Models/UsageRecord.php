@@ -13,6 +13,7 @@ class UsageRecord extends Model
         'scraping' => 'Web scraping',
         'storage' => 'Съхранение',
         'notification' => 'Известяване',
+        'workflow' => 'Обработени записи',
     ];
 
     protected $fillable = [

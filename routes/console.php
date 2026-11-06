@@ -5,10 +5,13 @@ use App\Models\PricingConfiguration;
 use App\Models\PricingMarket;
 use App\Models\RepairRequest;
 use App\Models\Ticket;
+use App\Models\Workflow;
 use App\Services\Business\BusinessIntakeService;
 use App\Services\Integrations\IntegrationManager;
 use App\Services\Integrations\IntegrationRegistry;
 use App\Services\Pricing\PricingAnalysisService;
+use App\Services\Workflows\WorkflowDispatcher;
+use App\Services\Workflows\WorkflowExecutionException;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
@@ -46,6 +49,28 @@ Artisan::command('business:reconcile', function (BusinessIntakeService $intake) 
 })->purpose('Idempotently link existing website requests and tickets');
 
 Schedule::command('integrations:dispatch')->everyMinute()->withoutOverlapping(5);
+
+Artisan::command('workflows:dispatch {--workflow= : Queue one active workflow by ID}', function (WorkflowDispatcher $dispatcher) {
+    Cache::put('workflows:scheduler_heartbeat', now()->toIso8601String(), now()->addDay());
+    $query = Workflow::query()->where('status', 'active');
+    if ($this->option('workflow')) {
+        $query->whereKey($this->option('workflow'));
+    } else {
+        $query->where('trigger_type', 'schedule')
+            ->where(fn ($query) => $query->whereNull('next_run_at')->orWhere('next_run_at', '<=', now()));
+    }
+
+    foreach ($query->get() as $workflow) {
+        try {
+            $run = $dispatcher->enqueue($workflow, null, $this->option('workflow') ? 'manual' : 'schedule');
+            $this->info($workflow->name.($run ? ': queued #'.$run->id : ': already queued/running'));
+        } catch (WorkflowExecutionException $exception) {
+            $this->warn($workflow->name.': '.$exception->getMessage());
+        }
+    }
+})->purpose('Queue active workflows that are due');
+
+Schedule::command('workflows:dispatch')->everyFifteenMinutes()->withoutOverlapping(10);
 
 Artisan::command('pricing:refresh', function (PricingAnalysisService $analysis) {
     $markets = PricingMarket::where('is_active', true)->get();

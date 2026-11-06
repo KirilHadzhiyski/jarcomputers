@@ -30,6 +30,8 @@ class AdminAuditTrail
                 'changed_fields' => collect($request->except([
                     '_token', '_method', 'password', 'password_confirmation', 'token',
                     'client_secret', 'refresh_token', 'products_token',
+                    'source_token', 'source_username', 'source_password',
+                    'rotate_webhook_secret',
                 ]))->keys()->values()->all(),
             ],
             'created_at' => now(),

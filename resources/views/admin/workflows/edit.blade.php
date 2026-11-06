@@ -16,7 +16,10 @@
                     'description' => 'Опишете източника, графика и контрола при публикуване. След това подредете стъпките на процеса.',
                 ])
                 @if ($isEditing)
-                    <a href="{{ route('admin.workflow-runs.index', ['workflow_id' => $workflow->id]) }}" class="btn-secondary-dark">История на изпълненията</a>
+                    <div class="flex flex-wrap gap-3">
+                        <form method="POST" action="{{ route('admin.workflows.run', $workflow) }}">@csrf<button class="btn-primary" @disabled($workflow->status !== 'active')>Стартирай сега</button></form>
+                        <a href="{{ route('admin.workflow-runs.index', ['workflow_id' => $workflow->id]) }}" class="btn-secondary-dark">История на изпълненията</a>
+                    </div>
                 @endif
             </div>
 
@@ -34,9 +37,23 @@
                         <div class="admin-field"><label for="status" class="text-sm font-medium">Статус</label><select id="status" name="status" class="input-shell" required>@foreach ($statusLabels as $value => $label)<option value="{{ $value }}" @selected(old('status', $workflow?->status ?? 'draft') === $value)>{{ $label }}</option>@endforeach</select></div>
                         <div class="admin-field"><label for="trigger_type" class="text-sm font-medium">Стартиране</label><select id="trigger_type" name="trigger_type" class="input-shell" required>@foreach ($triggerLabels as $value => $label)<option value="{{ $value }}" @selected(old('trigger_type', $workflow?->trigger_type ?? 'manual') === $value)>{{ $label }}</option>@endforeach</select></div>
                         <div class="admin-field"><label for="frequency_minutes" class="text-sm font-medium">Честота в минути</label><input id="frequency_minutes" name="frequency_minutes" type="number" min="15" max="43200" value="{{ old('frequency_minutes', $workflow?->frequency_minutes) }}" class="input-shell" placeholder="напр. 60"></div>
+                        @if ($isEditing && $workflow->trigger_type === 'webhook')
+                            <div class="admin-field admin-field-span rounded-2xl border border-border/70 bg-background p-4">
+                                <p class="text-sm font-medium">Webhook адрес</p>
+                                <code class="mt-2 block break-all text-xs">{{ route('workflows.webhook', $workflow) }}</code>
+                                <p class="mt-3 text-xs leading-5 text-muted-foreground">Изпращайте Unix време в <code>X-JAR-Timestamp</code> и <code>X-JAR-Signature: sha256=HMAC_SHA256(timestamp + "." + raw_body, secret)</code>. Приемат се заявки до 5 минути. Тайната се показва само при създаване или ротация.</p>
+                                @if (session('webhook_secret_once'))<div class="mt-3 rounded-xl bg-amber-500/10 p-3"><p class="text-xs font-semibold text-amber-800">Копирайте сега — няма да бъде показана отново:</p><code class="mt-2 block break-all text-xs">{{ session('webhook_secret_once') }}</code></div>@endif
+                                <label class="mt-4 flex items-center gap-3 text-sm"><input type="checkbox" name="rotate_webhook_secret" value="1"> Генерирай нова тайна при запазване</label>
+                            </div>
+                        @endif
                         <div class="admin-field"><label for="source_type" class="text-sm font-medium">Тип източник</label><select id="source_type" name="source_type" class="input-shell" required>@foreach ($sourceLabels as $value => $label)<option value="{{ $value }}" @selected(old('source_type', $workflow?->source_type ?? 'rest_api') === $value)>{{ $label }}</option>@endforeach</select></div>
                         <div class="admin-field"><label for="approval_mode" class="text-sm font-medium">Контрол на изхода</label><select id="approval_mode" name="approval_mode" class="input-shell" required>@foreach ($approvalLabels as $value => $label)<option value="{{ $value }}" @selected(old('approval_mode', $workflow?->approval_mode ?? 'review') === $value)>{{ $label }}</option>@endforeach</select></div>
                         <div class="admin-field admin-field-span"><label for="source_url" class="text-sm font-medium">HTTPS адрес на източника</label><input id="source_url" name="source_url" type="url" value="{{ old('source_url', $workflow?->source_url) }}" class="input-shell" placeholder="https://..."></div>
+                        <div class="admin-field"><label for="source_auth_type" class="text-sm font-medium">Достъп до източника</label><select id="source_auth_type" name="source_auth_type" class="input-shell" required>@foreach ($sourceAuthLabels as $value => $label)<option value="{{ $value }}" @selected(old('source_auth_type', $workflow?->source_auth_type ?? 'none') === $value)>{{ $label }}</option>@endforeach</select></div>
+                        <div class="admin-field"><label for="source_token" class="text-sm font-medium">Bearer token</label><input id="source_token" name="source_token" type="password" autocomplete="new-password" class="input-shell" placeholder="{{ filled($workflow?->source_credentials['token'] ?? null) ? 'Запазен — оставете празно без промяна' : 'Само ако е необходим' }}"></div>
+                        <div class="admin-field"><label for="source_username" class="text-sm font-medium">API потребител</label><input id="source_username" name="source_username" autocomplete="off" class="input-shell" value="{{ old('source_username', $workflow?->source_credentials['username'] ?? '') }}"></div>
+                        <div class="admin-field"><label for="source_password" class="text-sm font-medium">API парола</label><input id="source_password" name="source_password" type="password" autocomplete="new-password" class="input-shell" placeholder="{{ filled($workflow?->source_credentials['password'] ?? null) ? 'Запазена — оставете празно без промяна' : 'Само ако е необходима' }}"></div>
+                        <div class="admin-field admin-field-span"><p class="rounded-xl bg-primary/5 p-3 text-xs leading-5 text-muted-foreground">Разрешени домейни: {{ $allowedSourceHosts ? implode(', ', $allowedSourceHosts) : 'няма — задайте WORKFLOW_SOURCE_HOSTS в .env преди изпълнение' }}. Данните за достъп се пазят криптирано.</p></div>
                         <div class="admin-field admin-field-span"><label for="category_filters" class="text-sm font-medium">Филтри по категории</label><textarea id="category_filters" name="category_filters" rows="4" class="input-shell h-auto" placeholder="Една категория на ред">{{ $categoryValue }}</textarea></div>
                         <div class="admin-field admin-field-span"><label for="description" class="text-sm font-medium">Цел и правила</label><textarea id="description" name="description" rows="5" class="input-shell h-auto">{{ old('description', $workflow?->description) }}</textarea></div>
                     </div>
@@ -83,7 +100,7 @@
 
                     <div class="card-soft">
                         <h2 class="text-xl font-semibold">Добавяне на стъпка</h2>
-                        <p class="mt-2 text-sm text-muted-foreground">Конфигурацията е JSON и по-късно ще се изпълнява от конкретния конектор или AI агент.</p>
+                        <p class="mt-2 text-sm text-muted-foreground">За стъпка „Събиране“ може да зададете items_path, field_map, GraphQL query или CSV delimiter. Тайни не се поставят в JSON.</p>
                         <form method="POST" action="{{ route('admin.workflows.steps.store', $workflow) }}" class="mt-6 flex flex-col gap-5">
                             @csrf
                             <div class="admin-field"><label for="step_name" class="text-sm font-medium">Име</label><input id="step_name" name="name" class="input-shell" required></div>
@@ -97,7 +114,7 @@
 
                 <div class="card-soft mt-8">
                     <h2 class="text-xl font-semibold">Безопасност при публикуване</h2>
-                    <p class="mt-3 max-w-4xl text-sm leading-6 text-muted-foreground">Настройката „автоматично решение“ описва бъдещото поведение на процеса. Тази версия не изпраща данни към marketplace и не променя цени без отделен активен конектор и изрично разрешен live режим.</p>
+                    <p class="mt-3 max-w-4xl text-sm leading-6 text-muted-foreground">Процесът вече може да събира и нормализира данни от разрешени REST, GraphQL, RSS, JSON и CSV източници. Публикуването към marketplace остава блокирано без отделен активен конектор, live режим и проследимо одобрение.</p>
                 </div>
             @endif
         </div>

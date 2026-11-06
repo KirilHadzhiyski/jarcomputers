@@ -19,14 +19,24 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('aggregate', 'status');
         $subscription = $user->currentSubscription()->with('plan')->first();
-        $usageCostThisMonth = (float) $user->usageRecords()->where('occurred_at', '>=', now()->startOfMonth())->sum('cost');
+        $usageCostByCurrency = $user->usageRecords()
+            ->where('occurred_at', '>=', now()->startOfMonth())
+            ->selectRaw('currency_code, sum(cost) as total_cost')
+            ->groupBy('currency_code')
+            ->pluck('total_cost', 'currency_code');
+        $recordsUsedThisMonth = (int) $user->usageRecords()
+            ->where('service_type', 'workflow')
+            ->where('unit', 'record')
+            ->where('occurred_at', '>=', now()->startOfMonth())
+            ->sum('quantity');
 
         return view('dashboard.index', [
             'tickets' => $tickets,
             'ticketStats' => $ticketStats,
             'subscription' => $subscription,
-            'usageCostThisMonth' => $usageCostThisMonth,
-            'workflowCount' => $user->workflows()->count(),
+            'usageCostByCurrency' => $usageCostByCurrency,
+            'recordsUsedThisMonth' => $recordsUsedThisMonth,
+            'workflowCount' => $user->workflows()->where('status', '!=', 'archived')->count(),
             'contactChannels' => User::CONTACT_CHANNEL_LABELS,
             'statusLabels' => Ticket::STATUS_LABELS,
             'seo' => [

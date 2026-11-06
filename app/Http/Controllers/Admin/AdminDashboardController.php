@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Workflow;
+use App\Models\WorkflowAlert;
 use App\Models\WorkflowRun;
 use App\Services\Business\AdminBusinessSummaryService;
 use App\Services\Pricing\PricingOpportunitySummaryService;
@@ -32,6 +33,7 @@ class AdminDashboardController extends Controller
                 'total' => Workflow::query()->count(),
                 'active' => Workflow::query()->where('status', 'active')->count(),
                 'failed_runs' => WorkflowRun::query()->where('status', 'failed')->where('created_at', '>=', now()->subDays(7))->count(),
+                'open_alerts' => WorkflowAlert::query()->where('status', 'open')->count(),
             ],
             'subscriptionSummary' => $this->subscriptionSummaryService->summary(),
             'pricingSummary' => $this->pricingSummaryService->summary(),
